@@ -38,7 +38,7 @@
         <img src="../images/logo.png" class="logo"/>蓄热云—绿色储能 + 清洁供暖生态系统<span th:text="${name}"></span>
     </div>
     <div class="fr  height100 col-md-4 mt15 ">
-        <div class="inSystem"><img src="../images/icon.png" class="inSystemImg"/><span>进入系统</span></div>
+        <div class="inSystem"><img src="../images/icon.png" class="inSystemImg" /><span id="enter">进入系统</span></div>
         <img src="../images/borderRight.png" class="rightBorder width100">
     </div>
     <div class="col-md-12 titleLine">
@@ -872,6 +872,10 @@
         if (option && typeof option === "object") {
             chart.setOption(option, true);
         }
+
+        $("#enter").click(function(){
+            window.parent.location.replace('http://112.126.98.10:8880/#ProjectModule');
+        })
     }
 
 </script>
