@@ -120,8 +120,14 @@ body {
     background-size: 100% 100%;
 }
 
+.logo{
+    height: 32px;
+    vertical-align: middle;
+    margin-right: 15px;
+}
+
 .title {
-    font-size: 25px;
+    font-size: 23px;
     color: #fff;
     text-align: center;
     line-height: 45px;
