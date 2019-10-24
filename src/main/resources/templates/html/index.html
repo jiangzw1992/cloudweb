@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>蓄热云</title>
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../css/basic.css">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body,html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+		#l-map{height:100%;width:78%;float:left;border-right:2px solid #bcbcbc;}
+		#r-result{height:100%;width:20%;float:left;}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=uxNOfHgG9sm0ysvPxr8IrRNh1mHXj1vr"></script>
+</head>
+<body class="container-fluid">
+<input type="hidden" th:value="${dataArray}" id="dataArray"/>
+<div class="row">
+    <div class="fl  height100 col-md-4 mt15">
+        <div id="time">
+            <div class="clock fl">
+                <div id="Date" class="mr10"></div>
+                <ul>
+                    <li id="hours"></li>
+                    :
+                    <li id="min"></li>
+                    :
+                    <li id="sec"></li>
+                </ul>
+            </div>
+        </div>
+
+        <img src="../images/borderLeft.png" class="leftBorder width100" style="padding-right: 0 !important;">
+    </div>
+
+    <div class="title  col-md-4 mt15">
+        蓄热云 — 绿色储能 + 清洁供暖生态系统<span th:text="${name}"></span>
+    </div>
+    <div class="fr  height100 col-md-4 mt15 ">
+        <div class="inSystem"><img src="../images/icon.png" class="inSystemImg"/><span>进入系统</span></div>
+        <img src="../images/borderRight.png" class="rightBorder width100">
+    </div>
+    <div class="col-md-12 titleLine">
+        <img src="../images/titleLine.png" class=" width100">
+    </div>
+    <div class="col-md-12 dataContent">
+        <div class="col-md-3">
+            <div class="subTitle titleOne">数据概览</div>
+            <div class="dataDiv dataOne ">
+                <div class="col-md-4 subOne">
+                    <div class="subDivTitle">储能总功率</div>
+                    <div class="subData" id="subOneData">200
+                        <sup>kw</sup>
+                    </div>
+                </div>
+                <div class="col-md-4 subTwo">
+                    <div class="subDivTitle">储能总容量</div>
+                    <div class="subData" id="subTwoData">1580
+                        <sup>kw</sup>
+                    </div>
+                </div>
+                <div class="col-md-4 subThree">
+                    <div class="subDivTitle">供暖总面积</div>
+                    <div class="subData" id="subThreeData">450
+                        <sup>万m&sup2;</sup>
+                    </div>
+                </div>
+                <div class="col-md-4 subFour">
+                    <div class="subDivTitle">储能供暖站</div>
+                    <div class="subData" id="subFourData">45
+                        <sup>个</sup>
+                    </div>
+                </div>
+                <div class="col-md-4 subFive">
+                    <div class="subDivTitle">储能供热机组</div>
+                    <div class="subData" id="subFiveData">45
+                        <sup>个</sup>
+                    </div>
+                </div>
+            </div>
+            <div class="subTitle titleTwo">运维信息</div>
+            <div class="dataDiv dataTwo ">
+                <div class="col-md-4 runInfo">
+                    <div id="online"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-6 runInfo">在线</div>
+                        <div class="col-md-6 runInfo">离线</div>
+                        <div class="col-md-6 runInfo"><span id="onlineData">10</span></div>
+                        <div class="col-md-6 runInfo"><span id="offLineData">3</span></div>
+                    </div>
+                </div>
+                <div class="col-md-4 runInfo">
+                    <div id="device"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-6 runInfo">运行数</div>
+                        <div class="col-md-6 runInfo">待机数</div>
+                        <div class="col-md-6 runInfo"><span id="runData">50</span></div>
+                        <div class="col-md-6 runInfo"><span id="waitData">10</span></div>
+                    </div>
+                </div>
+                <div class="col-md-4 runInfo">
+                    <div id="warn"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-6 runInfo">报警</div>
+                        <div class="col-md-6 runInfo">正常</div>
+                        <div class="col-md-6 runInfo"><span id="warnData">5</span></div>
+                        <div class="col-md-6 runInfo"><span id="normalData">21</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="subTitle titleThree">绿色消纳</div>
+            <div class="dataDiv dataThree " style="padding-top: 20px">
+                <div class="col-md-4" id="dayData">
+                </div>
+                <div class="col-md-4" id="monthData">
+                </div>
+                <div class="col-md-4" id="yearData">
+                </div>
+            </div>
+        </div>
+        <!--地图数据-->
+        <div class="col-md-6 mapDiv mt15" style="background-color: #fff">
+            <div id="allmap"></div>
+        </div>
+        <div class="col-md-3">
+            <div class="subTitle titleOne">用户类别</div>
+            <div class="dataDiv dataOne " style="padding-left: 5px;padding-right: 5px">
+                <table id="userTable" class="table table-striped table-bordered dataTable no-footer">
+                    <thead>
+                    <tr>
+                        <td style="color: #20EAF8 ">【项目名称】</td>
+                        <td style="color: #20EAF8">【面积 m&sup2;】</td>
+                        <td style="color: #20EAF8">机组编号</td>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="subTitle titleTwo">监控中心</div>
+            <div class="dataDiv dataTwo ">
+                <div class="col-md-3 runInfo">
+                    <div id="inner"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-12 runInfo">室内</div>
+                        <div class="col-md-12 runInfo">温度</div>
+                    </div>
+                </div>
+                <div class="col-md-3 runInfo">
+                    <div id="outer"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-12 runInfo">室外</div>
+                        <div class="col-md-12 runInfo">温度</div>
+                    </div>
+                </div>
+                <div class="col-md-3 runInfo">
+                    <div id="output"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-12 runInfo">出水</div>
+                        <div class="col-md-12 runInfo">温度</div>
+                    </div>
+                </div>
+                <div class="col-md-3 runInfo">
+                    <div id="input"></div>
+                    <div class="text-center colorWhite runInfoText">
+                        <div class="col-md-12 runInfo">回水</div>
+                        <div class="col-md-12 runInfo">温度</div>
+                    </div>
+                </div>
+            </div>
+            <div class="subTitle titleThree">减排贡献</div>
+            <div class="dataDiv dataThree ">
+                <div class="col-md-6 contribution mt15">
+                    <div class="contributionDiv">
+                        <div class="col-md-12 colorWhite contributionText">CO2减排</div>
+                        <div class="col-md-12 contributionText" style="color:#CEA2E6;"><span id="co2"
+                                                                                             class="contributionData">14988048.12</span><sup>kt</sup>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 contribution mt15">
+                    <div class="contributionDiv">
+                        <div class="col-md-12 colorWhite contributionText">节约标煤</div>
+                        <div class="col-md-12 contributionText" style="color: #98DDF8"><span id="save"
+                                                                                             class="contributionData">14988048.12</span><sup>kt</sup>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 contribution" style="margin-top: 20px">
+                    <div class="contributionDiv">
+                        <div class="col-md-12 colorWhite contributionText">绿化贡献</div>
+                        <div class="col-md-12 contributionText" style="color: #1CB086"><span id="tree"
+                                                                                             class="contributionData">68.45</span><sup>亿株</sup>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="col-md-10 col-md-offset-1 bottomLine" style="margin-top: -5px">
+            <img src="../images/bottomLine.png" class=" width100">
+        </div>
+</div>
+<script src="../js/jquery/jquery.min.js"></script>
+<script src="../js/echart/echart.js"></script>
+<script src="../js/datatables/datatables.jquery.js"></script>
+<script src="../js/datatables/datatables.bootstrap.js"></script>
+<script src="../js/basic.js"></script>
+<script>
+    $(function () {
+        // 百度地图API功能
+        var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
+        //map.centerAndZoom(new BMap.Point(200.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+        map.centerAndZoom("通辽");
+        //添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes:[
+                BMAP_HYBRID_MAP
+            ]}));
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+        function addPoint(ln,la){
+            var point = new BMap.Point(ln,la);
+            var marker = new BMap.Marker(point);
+            map.addOverlay(marker);
+        }
+        var data = $("#dataArray").val();
+        var jsonArray = eval(data);
+        for(var i in jsonArray){
+            addPoint(jsonArray[i].ln,jsonArray[i].la);
+        }
+        //百度地图API功能
+
+        // $.ajax({
+        //     type: 'GET',
+        //     url: '/index/hello',
+        //     data: {
+        //         projectId: 1
+        //     },
+        //     dataType: 'json',
+        //     success: function (res) {
+        //         console.log(res)
+        //     }
+        // });
+
+        //运维信息
+        onlineData(10, 3);
+        deviceData(50, 10);
+        warnData(5, 21);
+        //绿色消纳
+        var dayData = 58;
+        var monthData = 258;
+        var yearData = 858;
+        initDayData(dayData, yearData);
+        initMonthData(monthData, yearData);
+        initYearData(yearData);
+        //用户类别
+        var userData = [{name: '清河幼儿园', area: '22000', no: '1407412'}, {
+            name: '清河中心小学',
+            area: '3452',
+            no: '1407412'
+        }, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}];
+        initUserTable(userData);
+        //监控中心 响应式适配1920*1080 100%模式
+        var topSize = '30%';
+        var fontSize = 14;
+        if ($(window).height() > 900) {
+            topSize = '35%';
+            fontSize = 18;
+        }
+        innerData(19, topSize, fontSize);
+        outerData(-20, topSize, fontSize);
+        outputData(32, topSize, fontSize);
+        inputData(52, topSize, fontSize);
+    })
+
+
+    //运维信息
+    function onlineData(online, offline) {
+        var data = [{value: online, name: '在线'}, {value: offline, name: '离线'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += data[i].value;
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#online").get(0));
+        var option = {
+            title: {
+                text: online,
+                subtext: '在线总数',
+                left: 'center',
+                top: '22%',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 25,
+                    align: 'center'
+                },
+                subtextStyle: {
+                    color: '#fff',
+                    lineHeight: '-15'
+                }
+            },
+            series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#14E38C", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    function deviceData(run, wait) {
+        var allDevice = run + wait;
+        var data = [{value: run, name: '运行数'}, {value: wait, name: '待机数'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += data[i].value;
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#device").get(0));
+        var option = {
+            title: {
+                text: allDevice,
+                subtext: '设备总数',
+                left: 'center',
+                top: '22%',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 25,
+                    align: 'center'
+                },
+                subtextStyle: {
+                    color: '#fff',
+                    lineHeight: '-15'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#6AD5F5", "#475F81"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    function warnData(warn, normal) {
+        var data = [{value: warn, name: '报警'}, {value: normal, name: '正常'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += data[i].value;
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#warn").get(0));
+        var option = {
+            title: {
+                text: warn,
+                subtext: '报警总数',
+                left: 'center',
+                top: '22%',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 25,
+                    align: 'center'
+                },
+                subtextStyle: {
+                    color: '#fff',
+                    lineHeight: '-15'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#F92416", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    //绿色消纳
+    function initDayData(dayData, yearData) {
+        var chart = echarts.init($("#dayData").get(0));
+        var option = {
+            backgroundColor: '#16487C',
+            title: {
+                text: dayData + 'kw/h',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: '13'
+                },
+                left: 'center'
+            },
+            color: ['#2CCEE1'],
+            tooltip: {
+                show: false
+            },
+            grid: {
+                bottom: '35px',
+                // containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: [{
+                        value: '当日消纳',
+                        textStyle: {
+                            fontSize: '15',
+                            color: '#fff'
+                        }
+                    }],
+                    axisTick: {
+                        alignWithLabel: true,
+                        show: false
+                    }, axisLine: {
+                        show: false
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    show: false,
+                    max: yearData
+                }
+            ],
+            series: [
+                {
+                    type: 'bar',
+                    barWidth: '30',
+                    data: [dayData]
+                }
+            ]
+        };
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    function initMonthData(monthData, yearData) {
+        var chart = echarts.init($("#monthData").get(0));
+        var option = {
+            backgroundColor: '#16487C',
+            title: {
+                text: monthData + 'kw/h',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: '13'
+                },
+                left: 'center'
+            },
+            color: ['#2CCEE1'],
+            tooltip: {
+                show: false
+            },
+            grid: {
+                bottom: '35px',
+                // containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: [{
+                        value: '当月消纳',
+                        textStyle: {
+                            fontSize: '15',
+                            color: '#fff'
+                        }
+                    }],
+                    axisTick: {
+                        alignWithLabel: true,
+                        show: false
+                    }, axisLine: {
+                        show: false
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    show: false,
+                    max: yearData
+                }
+            ],
+            series: [
+                {
+                    type: 'bar',
+                    barWidth: '30',
+                    data: [monthData]
+                }
+            ]
+        };
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    function initYearData(yearData) {
+        var chart = echarts.init($("#yearData").get(0));
+        var option = {
+            backgroundColor: '#16487C',
+            title: {
+                text: yearData + 'kw/h',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: '13'
+                },
+                left: 'center'
+            },
+            color: ['#2CCEE1'],
+            tooltip: {
+                show: false
+            },
+            grid: {
+                bottom: '35px',
+                // containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: [{
+                        value: '当年消纳',
+                        textStyle: {
+                            fontSize: '15',
+                            color: '#fff'
+                        }
+                    }],
+                    axisTick: {
+                        alignWithLabel: true,
+                        show: false
+                    }, axisLine: {
+                        show: false
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    show: false,
+                    max: yearData
+                }
+            ],
+            series: [
+                {
+                    type: 'bar',
+                    barWidth: '30',
+                    data: [yearData]
+                }
+            ]
+        };
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    //用户类别
+    function initUserTable(userData) {
+        var height = $(".dataDiv").height()-40;
+        var table = $("#userTable").DataTable({
+            data: userData,
+            autoWidth: false,
+            order: [],
+            columnDefs: [
+                {"width": "33%", "targets": 0},
+                {"width": "33%", "targets": 1},
+                {"width": "33%", "targets": 2}
+            ],
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            destroy: true,
+            info: false,
+            scrollY: height,
+            pageLength: 100,
+            language: {
+                url: '../json/chinese.json',
+            },
+            columns: [
+                {
+                    data: 'name', render: function (data, type, full, meta) {
+                        var size = 6;
+                        if ($(window).width() < 1400) {
+                            size = 5;
+                        }
+                        var value = data;
+                        if (data.length > size) {
+                            value = data.substring(0, size) + "...";
+                            value = "<span title=" + data + " >" + value + "</span>";
+                        } else {
+                            value = "<span title=" + data + " >" + data + "</span>";
+                        }
+                        return value;
+                    }
+                },
+                {data: 'area'},
+                {data: 'no'}
+            ],
+        })
+
+        $('#userTable tbody').on('mouseover', 'tr', function () {
+            if (!$(this).hasClass('badao_hoverd') ) {
+                $(this).addClass('badao_hoverd');
+                $(this).css('cssText',' background-image: linear-gradient(#19426E, transparent, #19426E) !important');
+            }
+        } ).on('mouseleave', 'tr', function () {
+            if ($(this).hasClass('badao_hoverd') ) {
+                $(this).removeClass('badao_hoverd');
+                $(this).css('cssText','background-color:transparent !important');
+            }
+        } );
+    }
+
+    //室内温度
+    function innerData(temperature, topSize, fontSize) {
+        var tempData = temperature + 30;
+        var data = [{value: tempData, name: '室内'}, {value: 110 - tempData, name: '灰色条'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += Math.abs(data[i].value);
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#inner").get(0));
+        var option = {
+            title: {
+                text: temperature + '℃',
+                left: 'center',
+                top: topSize,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: fontSize,
+                    align: 'center'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#14E38C", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    //室外温度
+    function outerData(temperature, topSize, fontSize) {
+        var tempData = temperature + 30;
+        var data = [{value: tempData, name: '室外温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += Math.abs(data[i].value);
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#outer").get(0));
+        var option = {
+            title: {
+                text: temperature + '℃',
+                left: 'center',
+                top: topSize,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: fontSize,
+                    align: 'center'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#F92416", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    //出水温度
+    function outputData(temperature, topSize, fontSize) {
+        var tempData = temperature + 30;
+        var data = [{value: tempData, name: '出水温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += Math.abs(data[i].value);
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#output").get(0));
+        var option = {
+            title: {
+                text: temperature + '℃',
+                left: 'center',
+                top: topSize,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: fontSize,
+                    align: 'center'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#08A9D7", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+    //回水温度
+    function inputData(temperature, topSize, fontSize) {
+        var tempData = temperature + 30;
+        var data = [{value: tempData, name: '回水温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var a = 0;
+        for (var i = 0; i < data.length; i++) {
+            a += Math.abs(data[i].value);
+        }
+        a = a * 0.3;
+        data.push({value: a, name: '__other', itemStyle: {normal: {color: 'rgba(0,0,0,0)'}}});
+        var chart = echarts.init($("#input").get(0));
+        var option = {
+            title: {
+                text: temperature + '℃',
+                left: 'center',
+                top: topSize,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: fontSize,
+                    align: 'center'
+                }
+            }, series: [
+                {
+                    type: 'pie',
+                    center: ["50%", "42%"],
+                    radius: ['75%', '85%'],
+                    avoidLabelOverlap: false,
+                    hoverAnimation: false,
+                    silent: true,
+                    startAngle: 230,
+                    // clockwise:false,
+                    itemStyle: {
+                        borderWidth: 1, //设置border的宽度有多大
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
+                    },
+                    data: data
+                }
+            ],
+            color: ["#07E292", "#546F8F"]
+        };
+        ;
+        if (option && typeof option === "object") {
+            chart.setOption(option, true);
+        }
+    }
+
+</script>
+</body>
+</html>

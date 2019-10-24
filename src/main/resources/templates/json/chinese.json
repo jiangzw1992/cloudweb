@@ -1,0 +1,15 @@
+{
+  "processing": "处理中...",
+  "lengthMenu": "",
+  "paginate": {
+    "first": "首页",
+    "previous": "上页",
+    "next": "下页",
+    "last": "末页"
+  },
+  "zeroRecords": "没有内容",
+  "emptyTable" : "表中数据为空",
+  "info": "共 _TOTAL_ 项记录，当前显示第 _PAGE_ 页",
+  "infoEmpty": "共 0 项记录",
+  "infoFiltered": "(由 _MAX_ 项结果过滤)"
+}

@@ -1,0 +1,323 @@
+html{min-height:100%;}
+body{min-height:100%;font-size: 12px}
+body,p,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,form,fieldset,legend,input,select,textarea,button,th,td{margin:0;padding:0;}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight: normal;}
+ul,dl,ol{list-style:none;cursor: pointer;}
+img,fieldset,input[type="submit"]{border:0 none;}
+img{display:inline-block;overflow:hidden;vertical-align:top;max-width:100%;}
+em{font-style:normal;}
+strong{font-weight:normal;}
+table{border-collapse:collapse;border-spacing:0;text-align:center}
+textarea{word-wrap:break-word;resize:none;}
+a{text-decoration:none;color:#333;}
+a:link,a:visited,a:hover,a:active{text-decoration:none;}
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.colorWhite{
+    color: #fff;
+}
+.fl{float:left;}
+.fr{float:right;}
+.tc{text-align:center;}
+.tr{text-align: right}
+.pr{position:relative;}
+.pa{position:absolute;}
+.pf{position:fixed;}
+.block{display:block;}
+.none{display: none;}
+.clearfix{*zoom:1;}
+.clearfix:after{clear:both;content:"";display:table;}
+/*padding*/
+.pdl0{
+    padding-left: 0 !important;
+}
+.pdr0{
+    padding-right: 0 !important;
+}
+.pd10{padding:10px;}
+.pdt10{padding-top:10px;}
+.pdr10{padding-right:10px;}
+.pdb10{padding-bottom:10px;}
+.pdl10{padding-left: 10px;}
+.pd15{padding:15px;}
+.pdt15{padding-top:15px;}
+.pdr15{padding-right:15px;}
+.pdb15{padding-bottom:15px;}
+.pdl15{padding-left: 15px;}
+.pd5{padding:5px;}
+.pdt5{padding-top:5px;}
+.pdr5{padding-right:5px;}
+.pdb5{padding-bottom:5px;}
+.pdl5{padding-left: 5px;}
+/*margin*/
+.mt5{margin-top:5px;}
+.mt10{margin-top:10px;}
+.mr10{margin-right:10px;}
+.mb10{margin-bottom:10px;}
+.ml10{margin-left:10px;}
+.m10{margin:10px;}
+.mt15{margin-top:15px;}
+.mr15{margin-right:15px;}
+.mb15{margin-bottom:15px;}
+.ml15{margin-left:15px;}
+.ml20{margin-left:19px !important;}
+.ml30{margin-left: 37% !important;}
+.ml5{margin-left:5px;}
+.m15{margin:15px;}
+.f10{font-size:10px;}
+.f12{font-size:12px;}
+.f14{font-size:14px;}
+.f16{font-size:16px;}
+.f18{font-size:18px;}
+.f20{font-size:20px;}
+.f25{font-size:25px;}
+.fb{font-weight:bold;}
+.height100{height: 100%}
+.height50{height: 50%}
+.width100{width: 100%}
+.width50{width: 50%}
+
+
+/*页面样式*/
+/*滚动条的宽度*/
+::-webkit-scrollbar {
+    width:9px;
+    height:9px;
+}
+
+/*外层轨道。可以用display:none让其不显示，也可以添加背景图片，颜色改变显示效果*/
+
+::-webkit-scrollbar-track {
+    width: 6px;
+    background-color:#3066AD;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius:2em;
+}
+
+/*滚动条的设置*/
+
+::-webkit-scrollbar-thumb {
+    background-color:#FFF;
+    background-clip:padding-box;
+    min-height:28px;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius:2em;
+}
+/*滚动条移上去的背景*/
+
+::-webkit-scrollbar-thumb:hover {
+    background-color:#fff;
+}
+
+
+body {
+    background-image: url("../images/bg.jpg");
+    background-size: 100% 100%;
+}
+
+.title {
+    font-size: 25px;
+    color: #fff;
+    text-align: center;
+    line-height: 45px;
+}
+
+.titleLine {
+    position: absolute;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.dataContent {
+    position: absolute;
+}
+
+.dataDiv {
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border: #3066AD 1px solid;
+    border-radius: 2px;
+    margin-top: 20px;
+    background: linear-gradient(to left, #fff, #fff) left top no-repeat,
+    linear-gradient(to bottom, #fff, #fff) left top no-repeat,
+    linear-gradient(to left, #fff, #fff) right top no-repeat,
+    linear-gradient(to bottom, #fff, #fff) right top no-repeat,
+    linear-gradient(to left, #fff, #fff) left bottom no-repeat,
+    linear-gradient(to bottom, #fff, #fff) left bottom no-repeat,
+    linear-gradient(to left, #fff, #fff) right bottom no-repeat,
+    linear-gradient(to left, #fff, #fff) right bottom no-repeat;
+    background-size: 1px 15px, 15px 1px, 1px 15px, 15px 1px;
+}
+
+.mapDiv {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.subTitle {
+    position: absolute;
+    font-size: 15px;
+    color: #fff;
+    background-color: #3066AD;
+    padding-left: 25px;
+    padding-right: 25px;
+    line-height: 25px;
+}
+
+
+.subOne, .subTwo, .subThree, .subFour, .subFive {
+    color: #fff;
+}
+
+.subOne, .subFour {
+    padding-right: 5px !important;
+    padding-left: 25px !important;
+}
+
+.subTwo, .subFive {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+}
+
+.subThree {
+    padding-left: 5px !important;
+}
+
+.subData {
+    font-size: 20px;
+    color: #1FDAEA;
+}
+
+sub, sup {
+    font-size: 60%
+}
+
+#onlineData {
+    color: #15BF82;
+}
+
+#warnData {
+    color: #DC5638;
+}
+
+#runData {
+    color: #6AD5F5;
+}
+
+.runInfo {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.runInfoText {
+    position: relative;
+    top: -40px
+}
+
+.contributionData {
+    font-size: 20px;
+}
+
+.contributionDiv {
+    /*background-color: #174679 ;*/
+    background-image: linear-gradient(to right, #174679, transparent);
+}
+
+.contribution {
+    padding-left: 10px !important;
+}
+
+.contributionText {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+
+table, thead, tbody, tr, td {
+    border: 0 !important;
+    background-color: transparent !important;
+    text-align: center !important;
+    color: #fff;
+}
+
+#time {
+    position: absolute;
+    top: 30px;
+    left: 35px;
+    color: #1FDAEA;
+}
+
+#Date, #time ul, #time ul li {
+    display: inline-block;
+}
+
+.inSystem {
+    color: #1FDAEA;
+    position: absolute;
+    right: 22px;
+    background-image: linear-gradient(to left, #174679, transparent);
+    cursor: pointer;
+}
+.table{
+    margin-bottom: 0 !important;
+}
+
+table, thead, tbody, tr, td {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    cursor: pointer;
+}
+.inSystemImg{
+    height: 12px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/*媒体查询分辨率小于1400*/
+@media (max-device-width: 1400px) {
+    .runInfoText {
+        top: -23px
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .contributionData {
+        font-size: 18px;
+    }
+
+    table, thead, tbody, tr, td {
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+}
+
+/*分辨率为1920*1680 100%显示*/
+@media (min-device-height: 930px) {
+    .subDivTitle {
+        font-size: 15px;
+    }
+
+    .subData {
+        font-size: 25px;
+    }
+
+    table, thead, tbody, tr, td {
+        font-size: 17px;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+
+    #time {
+        top: 35px;
+        font-size: 15px;
+    }
+}
+
+
+
