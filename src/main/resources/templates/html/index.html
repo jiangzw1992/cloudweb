@@ -50,13 +50,13 @@
             <div class="dataDiv dataOne ">
                 <div class="col-md-4 subOne">
                     <div class="subDivTitle">储能总功率</div>
-                    <div class="subData" id="subOneData">200
+                    <div class="subData" id="subOneData">
                         <sup>kw</sup>
                     </div>
                 </div>
                 <div class="col-md-4 subTwo">
                     <div class="subDivTitle">储能总容量</div>
-                    <div class="subData" id="subTwoData">1580
+                    <div class="subData" id="subTwoData">
                         <sup>kw</sup>
                     </div>
                 </div>
@@ -171,25 +171,23 @@
             <div class="dataDiv dataThree ">
                 <div class="col-md-6 contribution mt15">
                     <div class="contributionDiv">
-                        <div class="col-md-12 colorWhite contributionText">CO2减排</div>
-                        <div class="col-md-12 contributionText" style="color:#F6B6FF;"><span id="co2"
-                                                                                             class="contributionData">14988048.12</span><sup>kt</sup>
+                        <div class="col-md-12 colorWhite contributionText">CO<sub>2</sub>减排</div>
+                        <div class="col-md-12 contributionText" style="color:#F6B6FF;"><span id="ccers" class="contributionData"></span>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 contribution mt15">
                     <div class="contributionDiv">
                         <div class="col-md-12 colorWhite contributionText">节约标煤</div>
-                        <div class="col-md-12 contributionText" style="color:#9BE1FC;"><span id="save"
-                                                                                             class="contributionData">14988048.12</span><sup>kt</sup>
+                        <div class="col-md-12 contributionText" style="color:#9BE1FC;">
+                            <span id="coalSave" class="contributionData"></span>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 contribution" style="margin-top: 20px">
                     <div class="contributionDiv">
                         <div class="col-md-12 colorWhite contributionText">绿化贡献</div>
-                        <div class="col-md-12 contributionText" style="color: #20F996"><span id="tree"
-                                                                                             class="contributionData">68.45</span><sup>亿株</sup>
+                        <div class="col-md-12 contributionText" style="color: #20F996"><span id="greenSpace" class="contributionData"></span>
                         </div>
                     </div>
                 </div>
@@ -206,41 +204,22 @@
 <script src="../js/datatables/datatables.bootstrap.js"></script>
 <script src="../js/basic.js"></script>
 <script>
+    var roomtemp = '';
+    var wtemp = '';
+    var stemp = '';
+    var htemp = '';
+    // 百度地图API功能
+    var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
+    map.centerAndZoom("通辽",11);
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes:[
+            BMAP_HYBRID_MAP
+        ]}));
+    map.enableScrollWheelZoom(true);
+    //百度地图API功能
     $(function () {
-        // 百度地图API功能
-        var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
-        //map.centerAndZoom(new BMap.Point(200.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
-        map.centerAndZoom("通辽");
-        //添加地图类型控件
-        map.addControl(new BMap.MapTypeControl({
-            mapTypes:[
-                BMAP_HYBRID_MAP
-            ]}));
-        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-        function addPoint(ln,la){
-            var point = new BMap.Point(ln,la);
-            var marker = new BMap.Marker(point);
-            map.addOverlay(marker);
-        }
-        var data = $("#dataArray").val();
-        var jsonArray = eval(data);
-        for(var i in jsonArray){
-            addPoint(jsonArray[i].ln,jsonArray[i].la);
-        }
-        //百度地图API功能
-
-        // $.ajax({
-        //     type: 'GET',
-        //     url: '/index/hello',
-        //     data: {
-        //         projectId: 1
-        //     },
-        //     dataType: 'json',
-        //     success: function (res) {
-        //         console.log(res)
-        //     }
-        // });
-
+        var token = 'db3720f0-8d56-4aa1-9d2c-e47173ba0fab';
         //运维信息
         onlineData(10, 3);
         deviceData(50, 10);
@@ -252,26 +231,162 @@
         initDayData(dayData, yearData);
         initMonthData(monthData, yearData);
         initYearData(yearData);
-        //用户类别
-        var userData = [{name: '清河幼儿园', area: '22000', no: '1407412'}, {
-            name: '清河中心小学',
-            area: '3452',
-            no: '1407412'
-        }, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}, {name: '丰田镇中心幼儿园', area: '38900', no: '1407412'}, {name: '建新学校', area: '12234', no: '1407412'}];
-        initUserTable(userData);
-        //监控中心 响应式适配1920*1080 100%模式
-        var topSize = '30%';
-        var fontSize = 14;
-        if ($(window).height() > 900) {
-            topSize = '35%';
-            fontSize = 18;
-        }
-        innerData(19, topSize, fontSize);
-        outerData(-20, topSize, fontSize);
-        outputData(32, topSize, fontSize);
-        inputData(52, topSize, fontSize);
+
+        initDataOverview(token,2);
+        initMaintenInfo(token,2);
+        initMonitorInfo(token,2);
+        initProjectList(token);
+        initGreenInfo(token,2);
     })
 
+    function addPoint(ln,la){
+        var point = new BMap.Point(ln,la);
+        var marker = new BMap.Marker(point);
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        map.addOverlay(marker);
+    }
+
+    //数据概览
+    function initDataOverview(token,projectId){
+        $.ajax({
+            type: 'get',
+            url: '/api/getProjectInfo',
+            data: {
+                token:token,
+                projectId:projectId
+            },
+            dataType: 'json',
+            success: function(res){
+                console.log(res);
+                var dataArray = res.data;
+                for(var i = 0;i<dataArray.length;i++){
+                    //"储能容量"
+                    if("EnergyStorage" === dataArray[i].name){
+                        $("#subTwoData").html(dataArray[i].value)
+                    }
+                    //"储能功率"
+                    if("EnergyCapacity" === dataArray[i].name){
+                        $("#subOneData").html(dataArray[i].value)
+                    }
+                    //"供暖面积"
+                    if("HeatArea" === dataArray[i].name){
+                        $("#subThreeData").html(dataArray[i].value+"m&sup2;")
+                    }
+                    //"CO2减排量"
+                    if("CCERS" === dataArray[i].name){
+                        $("#ccers").html(dataArray[i].value+"kt")
+                    }
+                    //"标煤节约量"
+                    if("CoalSave" === dataArray[i].name){
+                        $("#coalSave").html(dataArray[i].value+"kt")
+                    }
+                    //"绿化贡献面积"
+                    if("GreenSpace" === dataArray[i].name){
+                        $("#greenSpace").html(dataArray[i].value+"亿株")
+                    }
+                }
+            }
+        });
+    }
+
+    //获取项目列表
+    function initProjectList(token){
+        $.ajax({
+            type: 'get',
+            url: '/api/getProjectsList',
+            data: {
+                token: token
+            },
+            dataType: 'json',
+            success: function(res){
+                var userData = res.data;
+                for(var i in userData){
+                    addPoint(userData[i].longitude,userData[i].latitude);
+                }
+                initUserTable(userData);
+            }
+        })
+    }
+
+    //获取项目列表
+    function initGreenInfo(token,projectId){
+        $.ajax({
+            type: 'get',
+            url: '/api/getProjectCurrentItemData',
+            data: {
+                token: token,
+                projectId:projectId
+            },
+            dataType: 'json',
+            success: function(res){
+                console.log('绿色消纳');
+                console.log(res);
+            }
+        });
+    }
+
+    //获取运维信息
+    function initMaintenInfo(token,projectId){
+        $.ajax({
+            type: 'get',
+            url: '/api/getVdevicesItems',
+            data: {
+                token: token,
+                projectId:projectId
+            },
+            dataType: 'json',
+            success: function(res){
+                console.log(res);
+            }
+        });
+    }
+
+    //获取监控信息
+    function initMonitorInfo(token,projectId){
+        $.ajax({
+            type: 'get',
+            url: '/api/getProjectCurrentItemData',
+            data: {
+                token: token,
+                projectId:projectId
+            },
+            dataType: 'json',
+            success: function(res){
+                debugger;
+                console.log(res);
+                var dataArray = res.data;
+                for(var i = 0;i<dataArray.length;i++){
+                    //"室内温度"
+                    if("oottemp" === dataArray[i].itemname){
+                        roomtemp = dataArray[i].val;
+                    }
+                    //"室外温度"
+                    if("W_TEM" === dataArray[i].itemname){
+                        wtemp = dataArray[i].val;
+                    }
+                    //"出水温度"
+                    if("S_TEM" === dataArray[i].itemname){
+                        stemp = dataArray[i].val;
+                    }
+                    //"回水温度"
+                    if("H_TEM" === dataArray[i].itemname){
+                        htemp = dataArray[i].val;
+                    }
+                }
+                //监控中心 响应式适配1920*1080 100%模式
+                var topSize = '30%';
+                var fontSize = 14;
+                if ($(window).height() > 900) {
+                    topSize = '35%';
+                    fontSize = 18;
+                }
+                innerData(roomtemp, topSize, fontSize);
+                outerData(wtemp, topSize, fontSize);
+                outputData(stemp, topSize, fontSize);
+                inputData(htemp, topSize, fontSize);
+            }
+        });
+    }
 
     //运维信息
     function onlineData(online, offline) {
@@ -652,8 +767,8 @@
                         return value;
                     }
                 },
-                {data: 'area'},
-                {data: 'no'}
+                {data: 'contactName'},
+                {data: 'id'}
             ],
         })
 

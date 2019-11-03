@@ -4,7 +4,7 @@ body,p,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,form,fieldset,legend,input,select,tex
 h1,h2,h3,h4,h5,h6{font-size:100%;font-weight: normal;}
 ul,dl,ol{list-style:none;cursor: pointer;}
 img,fieldset,input[type="submit"]{border:0 none;}
-img{display:inline-block;overflow:hidden;vertical-align:top;max-width:100%;}
+/*img{display:inline-block;overflow:hidden;vertical-align:top;max-width:100%;}*/
 em{font-style:normal;}
 strong{font-weight:normal;}
 table{border-collapse:collapse;border-spacing:0;text-align:center}
@@ -178,6 +178,7 @@ body {
 
 .subOne, .subTwo, .subThree, .subFour, .subFive {
     color: #fff;
+    min-height: 10px;
 }
 
 .subOne, .subFour {
@@ -286,7 +287,7 @@ table, thead, tbody, tr, td {
 /*媒体查询分辨率小于1400*/
 @media (max-device-width: 1400px) {
     .runInfoText {
-        top: -23px
+        top: -38px
     }
 
     .title {

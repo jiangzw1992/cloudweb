@@ -1,11 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script th:src = "@{/js/basic.js}"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../css/basic.css">
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+        #l-map{height:100%;width:78%;float:left;border-right:2px solid #bcbcbc;}
+        #r-result{height:100%;width:20%;float:left;}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=uxNOfHgG9sm0ysvPxr8IrRNh1mHXj1vr"></script>
+    <title>地图展示</title>
 </head>
 <body>
-<span th:text="${name}"></span>
+<div id="allmap"></div>
 </body>
 </html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
+    //map.centerAndZoom(new BMap.Point(200.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+    map.centerAndZoom("通辽");
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes:[
+            BMAP_HYBRID_MAP
+        ]}));
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+
+
+    var markers = []; //marker数组
+    function addPoint(ln,la){
+        var point = new BMap.Point(ln,la);
+        var marker = new BMap.Marker(point);
+        marker.addEventListener("click", function(){ //点击marker显示label
+            alert("123");
+        });
+        markers.push(marker)
+        map.addOverlay(marker);
+    }
+    var jsonstr= [{ln:122.209416,la:43.625412}];
+    var jsonobj = eval(jsonstr);
+    for(var i in jsonobj){
+        addPoint(jsonobj[i].ln,jsonobj[i].la);
+    }
+
+    console.log(markers);
+
+
+</script>

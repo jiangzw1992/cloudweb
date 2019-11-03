@@ -12,6 +12,7 @@ public class ApiService {
 
     public String getProjectsList(String token){
         String url = String.format("%s/project/getProjectsList?token=%s&active=1",api_host,token);
+        System.out.println(url);
         return HttpUtil.get(url);
     }
 
