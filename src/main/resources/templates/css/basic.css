@@ -232,7 +232,7 @@ sub, sup {
 
 .contributionDiv {
     /*background-color: #174679 ;*/
-    background-image: linear-gradient(to right, #174679, transparent);
+    /*background-image: linear-gradient(to right, #174679, transparent);*/
 }
 
 .contribution {

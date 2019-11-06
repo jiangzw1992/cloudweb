@@ -49,4 +49,10 @@ public class ApiController {
         return result;
     }
 
+    @RequestMapping(value = "/initData",produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String initData(@RequestParam String token){
+        return apiService.initDataOne(token,0);
+    }
+
 }

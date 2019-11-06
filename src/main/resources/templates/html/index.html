@@ -68,8 +68,7 @@
                 </div>
                 <div class="col-md-4 subFour">
                     <div class="subDivTitle">储能供暖站</div>
-                    <div class="subData" id="subFourData">45
-                        <sup>个</sup>
+                    <div class="subData" id="subFourData">
                     </div>
                 </div>
                 <div class="col-md-4 subFive">
@@ -208,6 +207,9 @@
     var wtemp = '';
     var stemp = '';
     var htemp = '';
+    var pCount = '';//项目总数
+    var projectList;
+    var token = '771bb3b3-16db-487a-b5ec-9975886f30e3';
     // 百度地图API功能
     var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
     map.centerAndZoom("通辽",11);
@@ -219,7 +221,6 @@
     map.enableScrollWheelZoom(true);
     //百度地图API功能
     $(function () {
-        var token = 'db3720f0-8d56-4aa1-9d2c-e47173ba0fab';
         //运维信息
         onlineData(10, 3);
         deviceData(50, 10);
@@ -232,11 +233,12 @@
         initMonthData(monthData, yearData);
         initYearData(yearData);
 
-        initDataOverview(token,2);
-        initMaintenInfo(token,2);
-        initMonitorInfo(token,2);
+        initData(token);
         initProjectList(token);
-        initGreenInfo(token,2);
+        // //显示数据
+        // initUserTable(projectList);
+        // showMonitorView(projectList[0]);
+
     })
 
     function addPoint(ln,la){
@@ -246,47 +248,69 @@
         map.addOverlay(marker);
     }
 
-    //数据概览
-    function initDataOverview(token,projectId){
+    //获取项目列表
+    function initData(token){
         $.ajax({
             type: 'get',
-            url: '/api/getProjectInfo',
+            url: '/api/initData',
             data: {
-                token:token,
-                projectId:projectId
+                token: token
             },
             dataType: 'json',
             success: function(res){
-                console.log(res);
-                var dataArray = res.data;
-                for(var i = 0;i<dataArray.length;i++){
-                    //"储能容量"
-                    if("EnergyStorage" === dataArray[i].name){
-                        $("#subTwoData").html(dataArray[i].value)
-                    }
-                    //"储能功率"
-                    if("EnergyCapacity" === dataArray[i].name){
-                        $("#subOneData").html(dataArray[i].value)
-                    }
-                    //"供暖面积"
-                    if("HeatArea" === dataArray[i].name){
-                        $("#subThreeData").html(dataArray[i].value+"m&sup2;")
-                    }
-                    //"CO2减排量"
-                    if("CCERS" === dataArray[i].name){
-                        $("#ccers").html(dataArray[i].value+"kt")
-                    }
-                    //"标煤节约量"
-                    if("CoalSave" === dataArray[i].name){
-                        $("#coalSave").html(dataArray[i].value+"kt")
-                    }
-                    //"绿化贡献面积"
-                    if("GreenSpace" === dataArray[i].name){
-                        $("#greenSpace").html(dataArray[i].value+"亿株")
-                    }
-                }
+                showDataOverview(res);
+                showMonitorView(res);
             }
-        });
+        })
+    }
+
+    //数据概览
+    function showDataOverview(dataitem){
+        $("#subTwoData").html(dataitem.dataView.EnergyStorage);
+        $("#subOneData").html(dataitem.dataView.EnergyCapacity);
+        $("#subThreeData").html(dataitem.dataView.HeatArea+"m&sup2;");
+        $("#ccers").html(dataitem.dataView.CCERS+"kt");
+        $("#coalSave").html(dataitem.dataView.CoalSave+"kt");
+        $("#greenSpace").html(dataitem.dataView.GreenSpace+"亿株");
+        // $.ajax({
+        //     type: 'get',
+        //     url: '/api/getProjectInfo',
+        //     data: {
+        //         token:token,
+        //         projectId:dataitem.id
+        //     },
+        //     dataType: 'json',
+        //     success: function(res){
+        //         console.log(res);
+        //         var dataArray = res.data;
+        //         for(var i = 0;i<dataArray.length;i++){
+        //             //"储能容量"
+        //             if("EnergyStorage" === dataArray[i].name){
+        //                 $("#subTwoData").html(dataArray[i].value)
+        //             }
+        //             //"储能功率"
+        //             if("EnergyCapacity" === dataArray[i].name){
+        //                 $("#subOneData").html(dataArray[i].value)
+        //             }
+        //             //"供暖面积"
+        //             if("HeatArea" === dataArray[i].name){
+        //                 $("#subThreeData").html(dataArray[i].value+"m&sup2;")
+        //             }
+        //             //"CO2减排量"
+        //             if("CCERS" === dataArray[i].name){
+        //                 $("#ccers").html(dataArray[i].value+"kt")
+        //             }
+        //             //"标煤节约量"
+        //             if("CoalSave" === dataArray[i].name){
+        //                 $("#coalSave").html(dataArray[i].value+"kt")
+        //             }
+        //             //"绿化贡献面积"
+        //             if("GreenSpace" === dataArray[i].name){
+        //                 $("#greenSpace").html(dataArray[i].value+"亿株")
+        //             }
+        //         }
+        //     }
+        // });
     }
 
     //获取项目列表
@@ -300,22 +324,34 @@
             dataType: 'json',
             success: function(res){
                 var userData = res.data;
+                $("#subFourData").html(res.data.length+"个")
                 for(var i in userData){
                     addPoint(userData[i].longitude,userData[i].latitude);
+                    //var dataitem = userData[i];
+                    //加载其他数据
+                    // initDataOverview(dataitem);
+                    // initMaintenInfo(dataitem);
+                    // initMonitorInfo(dataitem);
+                    // initGreenInfo(dataitem);
+
                 }
+                //显示供暖站个数和供热机组数
+                $("#subFourData").html(res.heatNum+"个");
+                $("#subFiveData").html(res.vDeviceItemsNum+"个");
+                // //实例化用户类别
                 initUserTable(userData);
             }
         })
     }
 
     //获取项目列表
-    function initGreenInfo(token,projectId){
+    function initGreenInfo(dataitem){
         $.ajax({
             type: 'get',
             url: '/api/getProjectCurrentItemData',
             data: {
                 token: token,
-                projectId:projectId
+                projectId:dataitem.id
             },
             dataType: 'json',
             success: function(res){
@@ -326,13 +362,13 @@
     }
 
     //获取运维信息
-    function initMaintenInfo(token,projectId){
+    function initMaintenInfo(dataitem){
         $.ajax({
             type: 'get',
             url: '/api/getVdevicesItems',
             data: {
                 token: token,
-                projectId:projectId
+                projectId:dataitem.id
             },
             dataType: 'json',
             success: function(res){
@@ -341,51 +377,18 @@
         });
     }
 
-    //获取监控信息
-    function initMonitorInfo(token,projectId){
-        $.ajax({
-            type: 'get',
-            url: '/api/getProjectCurrentItemData',
-            data: {
-                token: token,
-                projectId:projectId
-            },
-            dataType: 'json',
-            success: function(res){
-                debugger;
-                console.log(res);
-                var dataArray = res.data;
-                for(var i = 0;i<dataArray.length;i++){
-                    //"室内温度"
-                    if("oottemp" === dataArray[i].itemname){
-                        roomtemp = dataArray[i].val;
-                    }
-                    //"室外温度"
-                    if("W_TEM" === dataArray[i].itemname){
-                        wtemp = dataArray[i].val;
-                    }
-                    //"出水温度"
-                    if("S_TEM" === dataArray[i].itemname){
-                        stemp = dataArray[i].val;
-                    }
-                    //"回水温度"
-                    if("H_TEM" === dataArray[i].itemname){
-                        htemp = dataArray[i].val;
-                    }
-                }
-                //监控中心 响应式适配1920*1080 100%模式
-                var topSize = '30%';
-                var fontSize = 14;
-                if ($(window).height() > 900) {
-                    topSize = '35%';
-                    fontSize = 18;
-                }
-                innerData(roomtemp, topSize, fontSize);
-                outerData(wtemp, topSize, fontSize);
-                outputData(stemp, topSize, fontSize);
-                inputData(htemp, topSize, fontSize);
-            }
-        });
+    function showMonitorView(dataitem){
+        //监控中心 响应式适配1920*1080 100%模式
+        var topSize = '30%';
+        var fontSize = 14;
+        if ($(window).height() > 900) {
+            topSize = '35%';
+            fontSize = 18;
+        }
+        innerData(dataitem.monitorView.oottemp, topSize, fontSize);
+        outerData(dataitem.monitorView.W_TEM, topSize, fontSize);
+        outputData(dataitem.monitorView.S_TEM, topSize, fontSize);
+        inputData(dataitem.monitorView.H_TEM, topSize, fontSize);
     }
 
     //运维信息
@@ -767,8 +770,8 @@
                         return value;
                     }
                 },
-                {data: 'contactName'},
-                {data: 'id'}
+                {data: 'heatArea'},
+                {data: 'serialNumber'}
             ],
         })
 
@@ -992,6 +995,21 @@
             window.parent.location.replace('http://112.126.98.10:8880/#ProjectModule');
         })
     }
+
+    function getCookie(c_name){
+        if (document.cookie.length > 0) {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1)
+                    c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start,
+                    c_end));
+            }
+        }
+        return "";
+    };
 
 </script>
 </body>
