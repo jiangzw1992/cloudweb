@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.ParseException;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class HttpTest {
@@ -19,10 +21,10 @@ public class HttpTest {
     @Autowired
     ApiController apiController;
 
-    private static final String token = "67d1d546-b50e-439d-b751-f5d6b842202d";
+    private static final String token = "db3720f0-8d56-4aa1-9d2c-e47173ba0fab";
 
     @Test
-    public void getProjectsList(){
+    public void getProjectsList() throws ParseException {
         String result = apiService.getProjectsList(token);
         System.out.println(result);
     }
@@ -34,13 +36,13 @@ public class HttpTest {
     }
 
     @Test
-    public void getProjectCurrentItemData(){
+    public void getProjectCurrentItemData() throws ParseException {
         String result = apiService.getProjectsList(token);
         System.out.println(result);
     }
 
     @Test
-    public void getVdevicesItems(){
+    public void getVdevicesItems() throws ParseException {
         String result = apiService.getProjectsList(token);
         System.out.println(result);
     }

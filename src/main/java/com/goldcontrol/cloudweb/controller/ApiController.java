@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @Controller
 @RequestMapping("api")
 public class ApiController {
-
-    public final String token = "db3720f0-8d56-4aa1-9d2c-e47173ba0fab";
 
     @Autowired
     ApiService apiService;
 
     @RequestMapping(value = "/getProjectsList",produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String getProjectsList(@RequestParam String token){
+    public String getProjectsList(@RequestParam String token) throws ParseException {
         String result = apiService.getProjectsList(token);
         return result;
     }
@@ -51,7 +51,7 @@ public class ApiController {
 
     @RequestMapping(value = "/initData",produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String initData(@RequestParam String token){
+    public String initData(@RequestParam String token) throws ParseException {
         return apiService.initDataOne(token,0);
     }
 

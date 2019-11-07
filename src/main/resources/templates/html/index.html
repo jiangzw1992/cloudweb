@@ -62,7 +62,7 @@
                 </div>
                 <div class="col-md-4 subThree">
                     <div class="subDivTitle">供暖总面积</div>
-                    <div class="subData" id="subThreeData">450
+                    <div class="subData" id="subThreeData">
                         <sup>万m&sup2;</sup>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 </div>
                 <div class="col-md-4 subFive">
                     <div class="subDivTitle">储能供热机组</div>
-                    <div class="subData" id="subFiveData">45
+                    <div class="subData" id="subFiveData">
                         <sup>个</sup>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
                     <div class="text-center colorWhite runInfoText">
                         <div class="col-md-6 runInfo">在线</div>
                         <div class="col-md-6 runInfo">离线</div>
-                        <div class="col-md-6 runInfo"><span id="onlineData">10</span></div>
-                        <div class="col-md-6 runInfo"><span id="offLineData">3</span></div>
+                        <div class="col-md-6 runInfo"><span id="onlineData"></span></div>
+                        <div class="col-md-6 runInfo"><span id="offLineData"></span></div>
                     </div>
                 </div>
                 <div class="col-md-4 runInfo">
@@ -94,8 +94,8 @@
                     <div class="text-center colorWhite runInfoText">
                         <div class="col-md-6 runInfo">运行数</div>
                         <div class="col-md-6 runInfo">待机数</div>
-                        <div class="col-md-6 runInfo"><span id="runData">50</span></div>
-                        <div class="col-md-6 runInfo"><span id="waitData">10</span></div>
+                        <div class="col-md-6 runInfo"><span id="runData"></span></div>
+                        <div class="col-md-6 runInfo"><span id="waitData"></span></div>
                     </div>
                 </div>
                 <div class="col-md-4 runInfo">
@@ -103,8 +103,8 @@
                     <div class="text-center colorWhite runInfoText">
                         <div class="col-md-6 runInfo">报警</div>
                         <div class="col-md-6 runInfo">正常</div>
-                        <div class="col-md-6 runInfo"><span id="warnData">5</span></div>
-                        <div class="col-md-6 runInfo"><span id="normalData">21</span></div>
+                        <div class="col-md-6 runInfo"><span id="warnData"></span></div>
+                        <div class="col-md-6 runInfo"><span id="normalData"></span></div>
                     </div>
                 </div>
             </div>
@@ -209,7 +209,7 @@
     var htemp = '';
     var pCount = '';//项目总数
     var projectList;
-    var token = '771bb3b3-16db-487a-b5ec-9975886f30e3';
+    var token = 'b9083dba-9424-4e8b-8006-ffb3b1c177a2';
     // 百度地图API功能
     var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
     map.centerAndZoom("通辽",11);
@@ -221,18 +221,7 @@
     map.enableScrollWheelZoom(true);
     //百度地图API功能
     $(function () {
-        //运维信息
-        onlineData(10, 3);
-        deviceData(50, 10);
-        warnData(5, 21);
         //绿色消纳
-        var dayData = 58;
-        var monthData = 258;
-        var yearData = 858;
-        initDayData(dayData, yearData);
-        initMonthData(monthData, yearData);
-        initYearData(yearData);
-
         initData(token);
         initProjectList(token);
         // //显示数据
@@ -260,18 +249,19 @@
             success: function(res){
                 showDataOverview(res);
                 showMonitorView(res);
+                showGreenView(res);
             }
         })
     }
 
     //数据概览
     function showDataOverview(dataitem){
-        $("#subTwoData").html(dataitem.dataView.EnergyStorage);
-        $("#subOneData").html(dataitem.dataView.EnergyCapacity);
+        $("#subTwoData").html(dataitem.dataView.EnergyStorage+"<sup>kw</sup>");
+        $("#subOneData").html(dataitem.dataView.EnergyCapacity+"<sup>kw</sup>");
         $("#subThreeData").html(dataitem.dataView.HeatArea+"m&sup2;");
-        $("#ccers").html(dataitem.dataView.CCERS+"kt");
-        $("#coalSave").html(dataitem.dataView.CoalSave+"kt");
-        $("#greenSpace").html(dataitem.dataView.GreenSpace+"亿株");
+        $("#ccers").html(dataitem.dataView.CCERS+"<sup>kt</sup>");
+        $("#coalSave").html(dataitem.dataView.CoalSave+"<sup>kt</sup>");
+        $("#greenSpace").html(dataitem.dataView.GreenSpace+"<sup>亿株</sup>");
         // $.ajax({
         //     type: 'get',
         //     url: '/api/getProjectInfo',
@@ -336,9 +326,12 @@
 
                 }
                 //显示供暖站个数和供热机组数
-                $("#subFourData").html(res.heatNum+"个");
-                $("#subFiveData").html(res.vDeviceItemsNum+"个");
-                // //实例化用户类别
+                $("#subFourData").html(res.heatNum+"<sup>个</sup>");
+                $("#subFiveData").html(res.vDeviceItemsNum+"<sup>个</sup>");
+                //运维信息
+                onlineData(res.onlineCount,res.offlineCount);
+                deviceData(res.runCount, res.standbyCount);
+                warnData(res.alarmProjectCount, res.nomalProjectCount);
                 initUserTable(userData);
             }
         })
@@ -391,8 +384,21 @@
         inputData(dataitem.monitorView.H_TEM, topSize, fontSize);
     }
 
+    function showGreenView(res) {
+        var dayData = res.greenView.today;
+        var monthData = res.greenView.month;
+        var yearData = res.greenView.year;
+        initDayData(dayData, yearData);
+        initMonthData(monthData, yearData);
+        initYearData(yearData);
+        // //实例化用户类别
+        // initUserTable(res);
+    }
+
     //运维信息
     function onlineData(online, offline) {
+        $("#onlineData").html(online);
+        $("#offLineData").html(offline);
         var data = [{value: online, name: '在线'}, {value: offline, name: '离线'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
@@ -449,6 +455,8 @@
 
     function deviceData(run, wait) {
         var allDevice = run + wait;
+        $("#runData").html(run);
+        $("#waitData").html(wait);
         var data = [{value: run, name: '运行数'}, {value: wait, name: '待机数'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
@@ -503,6 +511,8 @@
     }
 
     function warnData(warn, normal) {
+        $("#warnData").html(warn);
+        $("#normalData").html(normal);
         var data = [{value: warn, name: '报警'}, {value: normal, name: '正常'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
