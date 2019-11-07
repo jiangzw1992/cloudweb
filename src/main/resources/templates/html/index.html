@@ -203,13 +203,7 @@
 <script src="../js/datatables/datatables.bootstrap.js"></script>
 <script src="../js/basic.js"></script>
 <script>
-    var roomtemp = '';
-    var wtemp = '';
-    var stemp = '';
-    var htemp = '';
-    var pCount = '';//项目总数
-    var projectList;
-    var token = 'b9083dba-9424-4e8b-8006-ffb3b1c177a2';
+    var token = '';
     // 百度地图API功能
     var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
     map.centerAndZoom("通辽",11);
@@ -221,6 +215,7 @@
     map.enableScrollWheelZoom(true);
     //百度地图API功能
     $(function () {
+        token = getCookie("token_v3");
         //绿色消纳
         initData(token);
         initProjectList(token);
