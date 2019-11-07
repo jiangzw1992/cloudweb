@@ -204,11 +204,13 @@ public class ApiService {
      */
     public String initDataOne(String token,int idx) throws ParseException {
         String projectList = getProjectsList(token) ;
-        getProjectCurrentItemData(token,"11");
         JSONObject projectData = JSONObject.parseObject(projectList);
         JSONArray projectArray = projectData.getJSONArray("data");
         JSONObject project = projectArray.getJSONObject(idx);
         String projectId = project.getString("id");
+
+        getProjectCurrentItemData(token,projectId);
+
         //获取数据概览信息
         String infoString = getProjectInfo(token,projectId);
         JSONObject infoJSONObject = JSONObject.parseObject(infoString);
