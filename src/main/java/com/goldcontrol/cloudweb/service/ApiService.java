@@ -454,10 +454,10 @@ public class ApiService {
     private void setDeafultVal(JSONObject projectJsonObject){
         //获取监控中心数据
         JSONObject monitorView = new JSONObject();
-        monitorView.put("oottemp","");
-        monitorView.put("W_TEM","");
-        monitorView.put("S_TEM","");
-        monitorView.put("H_TEM","");
+        monitorView.put("oottemp","0");
+        monitorView.put("W_TEM","0");
+        monitorView.put("S_TEM","0");
+        monitorView.put("H_TEM","0");
         projectJsonObject.put("monitorView",monitorView);
         JSONObject greenView = new JSONObject();
         greenView.put("today","");

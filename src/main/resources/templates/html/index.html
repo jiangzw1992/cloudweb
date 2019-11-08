@@ -811,8 +811,8 @@
 
     //室内温度
     function innerData(temperature, topSize, fontSize) {
-        var tempData = temperature + 30;
-        var data = [{value: tempData, name: '室内'}, {value: 110 - tempData, name: '灰色条'}];
+        var tempData = temperature;
+        var data = [{value: tempData, name: '室内'}, {value: 800 - tempData, name: '灰色条'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
             a += Math.abs(data[i].value);
@@ -862,8 +862,8 @@
 
     //室外温度
     function outerData(temperature, topSize, fontSize) {
-        var tempData = temperature + 30;
-        var data = [{value: tempData, name: '室外温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var tempData = temperature;
+        var data = [{value: tempData, name: '室外温度'}, {value: 800 - tempData, name: '灰色条'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
             a += Math.abs(data[i].value);
@@ -913,8 +913,8 @@
 
     //出水温度
     function outputData(temperature, topSize, fontSize) {
-        var tempData = temperature + 30;
-        var data = [{value: tempData, name: '出水温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var tempData = temperature;
+        var data = [{value: tempData, name: '出水温度'}, {value: 800 - tempData, name: '灰色条'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
             a += Math.abs(data[i].value);
@@ -964,8 +964,8 @@
 
     //回水温度
     function inputData(temperature, topSize, fontSize) {
-        var tempData = temperature + 30;
-        var data = [{value: tempData, name: '回水温度'}, {value: 110 - tempData, name: '灰色条'}];
+        var tempData = temperature;
+        var data = [{value: tempData, name: '回水温度'}, {value: 800 - tempData, name: '灰色条'}];
         var a = 0;
         for (var i = 0; i < data.length; i++) {
             a += Math.abs(data[i].value);
