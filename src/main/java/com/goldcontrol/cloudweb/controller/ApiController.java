@@ -51,8 +51,8 @@ public class ApiController {
 
     @RequestMapping(value = "/initData",produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String initData(@RequestParam String token) throws ParseException {
-        return apiService.initDataOne(token,0);
+    public String initData(@RequestParam String token,Integer projectId) throws ParseException {
+        return apiService.initDataOne(token,projectId);
     }
 
 }

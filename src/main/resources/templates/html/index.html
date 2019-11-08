@@ -215,7 +215,8 @@
     map.enableScrollWheelZoom(true);
     //百度地图API功能
     $(function () {
-        token = getCookie("token_v3");
+        // token = getCookie("token_v3");
+        token = 'e1eb2fb2-7f4c-4655-acaf-48bf8fcbac39';
         //绿色消纳
         initData(token);
         initProjectList(token);
@@ -781,6 +782,21 @@
         })
 
         $('#userTable tbody').on('mouseover', 'tr', function () {
+            var projectId = table.row(this).data().id;
+            $.ajax({
+                type: 'get',
+                url: '/api/initData',
+                data: {
+                    token: token,
+                    projectId:projectId
+                },
+                dataType: 'json',
+                success: function(res){
+                    showDataOverview(res);
+                    showMonitorView(res);
+                    showGreenView(res);
+                }
+            });
             if (!$(this).hasClass('badao_hoverd') ) {
                 $(this).addClass('badao_hoverd');
                 $(this).css('cssText',' background-image: linear-gradient(#19426E, transparent, #19426E) !important');

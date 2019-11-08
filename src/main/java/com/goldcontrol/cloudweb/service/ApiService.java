@@ -28,6 +28,7 @@ public class ApiService {
         for(Object object : projectArray){
             if(object instanceof JSONObject){
                 JSONObject project = (JSONObject)object;
+                setDeafultVal(project);
                 //获取项目供暖面积
                 dealProjectArea(token,project);
                 //获取网关信息
@@ -47,11 +48,16 @@ public class ApiService {
                 //今年第一天的耗电量
                 String year1Consume = getYearGreenData(token,deviceObject);
 
-                JSONObject greenView = new JSONObject();
-                greenView.put("today",Long.parseLong(powerConsume) - Long.parseLong(todayConsume));
-                greenView.put("month",Long.parseLong(powerConsume) - Long.parseLong(month1Consume));
-                greenView.put("year",Long.parseLong(powerConsume) - Long.parseLong(year1Consume));
-
+                JSONObject greenView = project.getJSONObject("greenView");
+                if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(todayConsume)){
+                    greenView.put("today",Long.parseLong(powerConsume) - Long.parseLong(todayConsume));
+                }
+                if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(month1Consume)){
+                    greenView.put("month",Long.parseLong(powerConsume) - Long.parseLong(todayConsume));
+                }
+                if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(year1Consume)){
+                    greenView.put("year",Long.parseLong(powerConsume) - Long.parseLong(year1Consume));
+                }
                 project.put("greenView",greenView);
                 if("1".equals(status)){
                     onCount++;
@@ -202,46 +208,67 @@ public class ApiService {
      * @param token
      * @param idx
      */
-    public String initDataOne(String token,int idx) throws ParseException {
-        String projectList = getProjectsList(token) ;
+    public String initDataOne(String token,Integer projectIdParam) throws ParseException {
+        String projectList = getProjectsList(token);
         JSONObject projectData = JSONObject.parseObject(projectList);
         JSONArray projectArray = projectData.getJSONArray("data");
-        JSONObject project = projectArray.getJSONObject(idx);
-        String projectId = project.getString("id");
+        JSONObject project = new JSONObject();
+        if(projectIdParam == null){
+            project = projectArray.getJSONObject(0);
+        }else{
+            for(Object object : projectArray){
+                if(object instanceof JSONObject){
+                    JSONObject jsonObject = (JSONObject)object;
+                    if(projectIdParam == jsonObject.getInteger("id")){
+                        project = jsonObject;
+                        break;
+                    }
+                }
+            }
+        }
 
-        getProjectCurrentItemData(token,projectId);
+        String projectId = project.getString("id");
+        //getProjectCurrentItemData(token,projectId);
 
         //获取数据概览信息
         String infoString = getProjectInfo(token,projectId);
         JSONObject infoJSONObject = JSONObject.parseObject(infoString);
         JSONArray infoArray = infoJSONObject.getJSONArray("data");
-        JSONObject dataView = new JSONObject();
+        JSONObject dataView = project.getJSONObject("dataView");
         for(Object object : infoArray){
             if(object instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)object;
                 if("EnergyStorage".equals(jsonObject.getString("name"))){
-                    dataView.put("EnergyStorage",jsonObject.getString("value"));//储能容量
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("EnergyStorage",jsonObject.getString("value"));//储能容量
+                    }
                 }else if("EnergyCapacity".equals(jsonObject.getString("name"))){
-                    dataView.put("EnergyCapacity",jsonObject.getString("value"));//储能功率
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("EnergyCapacity",jsonObject.getString("value"));//储能功率
+                    }
                 }else if("HeatArea".equals(jsonObject.getString("name"))){
-                    dataView.put("HeatArea",jsonObject.getString("value"));//供暖面积
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("HeatArea",jsonObject.getString("value"));//供暖面积
+                    }
                 }else if("CCERS".equals(jsonObject.getString("name"))){
-                    dataView.put("CCERS",jsonObject.getString("value"));//CO2减排量
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("CCERS",jsonObject.getString("value"));//CO2减排量
+                    }
                 }else if("CoalSave".equals(jsonObject.getString("name"))){
-                    dataView.put("CoalSave",jsonObject.getString("value"));//标煤节约量
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("CoalSave",jsonObject.getString("value"));//标煤节约量
+                    }
                 }else if("GreenSpace".equals(jsonObject.getString("name"))){
-                    dataView.put("GreenSpace",jsonObject.getString("value"));//绿化贡献面积
+                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
+                        dataView.put("GreenSpace",jsonObject.getString("value"));//绿化贡献面积
+                    }
                 }
             }
         }
         project.put("dataView",dataView);
 
         //获取监控中心数据
-        JSONObject monitorView = new JSONObject();
-        monitorView.put("oottemp","");
-        monitorView.put("W_TEM","");
-        monitorView.put("S_TEM","");
-        monitorView.put("H_TEM","");
+        JSONObject monitorView = project.getJSONObject("monitorView");
         String monitorInfo = getProjectCurrentItemData(token,projectId);
         JSONObject monitorJSONObject = JSONObject.parseObject(monitorInfo);
         JSONArray monitorArray = monitorJSONObject.getJSONArray("data");
@@ -249,13 +276,21 @@ public class ApiService {
             if(object instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)object;
                 if("室内温度".equals(jsonObject.getString("alias"))){
-                    monitorView.put("oottemp",jsonObject.getString("val"));
+                    if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
+                        monitorView.put("oottemp",jsonObject.getString("val"));
+                    }
                 }else if("室外温度".equals(jsonObject.getString("alias"))){
-                    monitorView.put("W_TEM",jsonObject.getString("val"));
+                    if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
+                        monitorView.put("W_TEM",jsonObject.getString("val"));
+                    }
                 }else if("出水温度".equals(jsonObject.getString("alias"))){
-                    monitorView.put("S_TEM",jsonObject.getString("val"));
+                    if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
+                        monitorView.put("S_TEM",jsonObject.getString("val"));
+                    }
                 }else if("回水温度".equals(jsonObject.getString("alias"))){
-                    monitorView.put("H_TEM",jsonObject.getString("val"));
+                    if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
+                        monitorView.put("H_TEM",jsonObject.getString("val"));
+                    }
                 }
             }
         }
@@ -414,6 +449,29 @@ public class ApiService {
             return "0";
         }
         return "0";
+    }
+
+    private void setDeafultVal(JSONObject projectJsonObject){
+        //获取监控中心数据
+        JSONObject monitorView = new JSONObject();
+        monitorView.put("oottemp","");
+        monitorView.put("W_TEM","");
+        monitorView.put("S_TEM","");
+        monitorView.put("H_TEM","");
+        projectJsonObject.put("monitorView",monitorView);
+        JSONObject greenView = new JSONObject();
+        greenView.put("today","");
+        greenView.put("month","");
+        greenView.put("year","");
+        projectJsonObject.put("greenView",greenView);
+        JSONObject dataView = new JSONObject();
+        dataView.put("EnergyStorage","");//储能容量
+        dataView.put("EnergyCapacity","");//储能功率
+        dataView.put("HeatArea","");//供暖面积
+        dataView.put("CCERS","");//CO2减排量
+        dataView.put("CoalSave","");//标煤节约量
+        dataView.put("GreenSpace","");//绿化贡献面积
+        projectJsonObject.put("dataView",dataView);
     }
 
 }
