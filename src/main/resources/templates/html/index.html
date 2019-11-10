@@ -206,7 +206,7 @@
     var token = '';
     // 百度地图API功能
     var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
-    map.centerAndZoom("通辽",11);
+    map.centerAndZoom("通辽",13);
     //添加地图类型控件
     map.addControl(new BMap.MapTypeControl({
         mapTypes:[
@@ -215,8 +215,8 @@
     map.enableScrollWheelZoom(true);
     //百度地图API功能
     $(function () {
-        // token = getCookie("token_v3");
-        token = 'e1eb2fb2-7f4c-4655-acaf-48bf8fcbac39';
+        token = getCookie("token_v3");
+        // token = '132c04e6-bc29-43c6-9edc-c1ec03fb3796';
         //绿色消纳
         initData(token);
         initProjectList(token);
@@ -243,60 +243,18 @@
             },
             dataType: 'json',
             success: function(res){
-                showDataOverview(res);
+                //showDataOverview(res);
                 showMonitorView(res);
-                showGreenView(res);
+                //showGreenView(res);
             }
         })
     }
 
-    //数据概览
+    //减排贡献
     function showDataOverview(dataitem){
-        $("#subTwoData").html(dataitem.dataView.EnergyStorage+"<sup>kw</sup>");
-        $("#subOneData").html(dataitem.dataView.EnergyCapacity+"<sup>kw</sup>");
-        $("#subThreeData").html(dataitem.dataView.HeatArea+"m&sup2;");
         $("#ccers").html(dataitem.dataView.CCERS+"<sup>kt</sup>");
         $("#coalSave").html(dataitem.dataView.CoalSave+"<sup>kt</sup>");
         $("#greenSpace").html(dataitem.dataView.GreenSpace+"<sup>亿株</sup>");
-        // $.ajax({
-        //     type: 'get',
-        //     url: '/api/getProjectInfo',
-        //     data: {
-        //         token:token,
-        //         projectId:dataitem.id
-        //     },
-        //     dataType: 'json',
-        //     success: function(res){
-        //         console.log(res);
-        //         var dataArray = res.data;
-        //         for(var i = 0;i<dataArray.length;i++){
-        //             //"储能容量"
-        //             if("EnergyStorage" === dataArray[i].name){
-        //                 $("#subTwoData").html(dataArray[i].value)
-        //             }
-        //             //"储能功率"
-        //             if("EnergyCapacity" === dataArray[i].name){
-        //                 $("#subOneData").html(dataArray[i].value)
-        //             }
-        //             //"供暖面积"
-        //             if("HeatArea" === dataArray[i].name){
-        //                 $("#subThreeData").html(dataArray[i].value+"m&sup2;")
-        //             }
-        //             //"CO2减排量"
-        //             if("CCERS" === dataArray[i].name){
-        //                 $("#ccers").html(dataArray[i].value+"kt")
-        //             }
-        //             //"标煤节约量"
-        //             if("CoalSave" === dataArray[i].name){
-        //                 $("#coalSave").html(dataArray[i].value+"kt")
-        //             }
-        //             //"绿化贡献面积"
-        //             if("GreenSpace" === dataArray[i].name){
-        //                 $("#greenSpace").html(dataArray[i].value+"亿株")
-        //             }
-        //         }
-        //     }
-        // });
     }
 
     //获取项目列表
@@ -313,15 +271,11 @@
                 $("#subFourData").html(res.data.length+"个")
                 for(var i in userData){
                     addPoint(userData[i].longitude,userData[i].latitude);
-                    //var dataitem = userData[i];
-                    //加载其他数据
-                    // initDataOverview(dataitem);
-                    // initMaintenInfo(dataitem);
-                    // initMonitorInfo(dataitem);
-                    // initGreenInfo(dataitem);
-
                 }
                 //显示供暖站个数和供热机组数
+                $("#subTwoData").html(res.totalEnergyStorage+"<sup>kw</sup>");
+                $("#subOneData").html(res.totalEnergyCapacity+"<sup>kw</sup>");
+                $("#subThreeData").html(res.totalHeatArea+"<sup>m&sup2</sup>");
                 $("#subFourData").html(res.heatNum+"<sup>个</sup>");
                 $("#subFiveData").html(res.vDeviceItemsNum+"<sup>个</sup>");
                 //运维信息
@@ -329,6 +283,8 @@
                 deviceData(res.runCount, res.standbyCount);
                 warnData(res.alarmProjectCount, res.nomalProjectCount);
                 initUserTable(userData);
+                //绿色收纳
+                showGreenView(res)
             }
         })
     }
@@ -381,9 +337,9 @@
     }
 
     function showGreenView(res) {
-        var dayData = res.greenView.today;
-        var monthData = res.greenView.month;
-        var yearData = res.greenView.year;
+        var dayData = res.totaltoday;
+        var monthData = res.totalmonth;
+        var yearData = res.totalyear;
         initDayData(dayData, yearData);
         initMonthData(monthData, yearData);
         initYearData(yearData);
@@ -776,7 +732,7 @@
                         return value;
                     }
                 },
-                {data: 'heatArea'},
+                {data: 'HeatArea'},
                 {data: 'serialNumber'}
             ],
         })
@@ -794,7 +750,6 @@
                 success: function(res){
                     showDataOverview(res);
                     showMonitorView(res);
-                    showGreenView(res);
                 }
             });
             if (!$(this).hasClass('badao_hoverd') ) {

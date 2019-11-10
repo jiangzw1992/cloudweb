@@ -29,7 +29,7 @@ public class ApiService {
             if(object instanceof JSONObject){
                 JSONObject project = (JSONObject)object;
                 setDeafultVal(project);
-                //获取项目供暖面积
+                //获取项目供暖面积及其他信息
                 dealProjectArea(token,project);
                 //获取网关信息
                 HashSet<String> serialNumberSet = dealVdevicesItems(token,project);
@@ -64,6 +64,27 @@ public class ApiService {
                 }
             }
         }
+
+//        for(int k=0;k<projectArray.size();k++){
+//            JSONObject jsonObject = projectArray.getJSONObject(k);
+//            if( k == 0){
+//                jsonObject.put("longitude","122.259722");
+//                jsonObject.put("latitude","43.687401");
+//            }else if(k == 1){
+//                jsonObject.put("longitude","122.20453");
+//                jsonObject.put("latitude","43.63982");
+//            }else if(k == 2){
+//                jsonObject.put("longitude","122.175784");
+//                jsonObject.put("latitude","43.724938");
+//            }else if(k == 3){
+//                jsonObject.put("longitude","122.272729");
+//                jsonObject.put("latitude","43.691469");
+//            }else if(k == 4){
+//                jsonObject.put("longitude","122.22228");
+//                jsonObject.put("latitude","43.676709");
+//            }
+//        }
+
         projectJSONObject.put("vDeviceItemsNum",serialNumberSetTotal.size());
         //供暖站个数
         projectJSONObject.put("heatNum",projectArray.size());
@@ -77,6 +98,8 @@ public class ApiService {
         int onlineCount = getAgentListInfo(token,serialNumberSetTotal);
         projectJSONObject.put("onlineCount",onlineCount);
         projectJSONObject.put("offlineCount",projectCount-onlineCount);
+        sumProjectInfo(projectJSONObject);
+        System.out.println(projectJSONObject.toJSONString());
         return projectJSONObject.toJSONString();
     }
 
@@ -88,6 +111,60 @@ public class ApiService {
     public String getProjectCurrentItemData(String token,String projectId){
         String url = String.format("%s/project/getProjectCurrentItemData?token=%s&projectID=%s",api_host,token,projectId);
         return HttpUtil.get(url);
+    }
+
+    /**
+     * 数据概览属性求和
+     * @param projectJSONObject
+     */
+    private void sumProjectInfo(JSONObject projectJSONObject){
+        JSONArray projectArray = projectJSONObject.getJSONArray("data");
+        //数据概览数据求和
+        double totalEnergyStorage = 0;
+        double totalEnergyCapacity = 0;
+        double totalHeatArea = 0;
+        //绿色收纳求和
+        double totaltoday = 0;
+        double totalmonth = 0;
+        double totalyear = 0;
+        for(Object object : projectArray){
+            if(object instanceof JSONObject){
+                JSONObject jsonObject = (JSONObject)object;
+                if(jsonObject.get("EnergyStorage") != null
+                        && StringUtils.isNotBlank(jsonObject.get("EnergyStorage").toString())){
+                    totalEnergyStorage = totalEnergyStorage + Double.parseDouble(jsonObject.get("EnergyStorage").toString());
+                }
+                if(jsonObject.get("EnergyCapacity") != null
+                        && StringUtils.isNotBlank(jsonObject.get("EnergyCapacity").toString())){
+                    totalEnergyCapacity = totalEnergyCapacity + Double.parseDouble(jsonObject.get("EnergyCapacity").toString());
+                }
+                if(jsonObject.get("HeatArea") != null
+                        && StringUtils.isNotBlank(jsonObject.get("HeatArea").toString())){
+                    totalHeatArea = totalHeatArea + Double.parseDouble(jsonObject.get("HeatArea").toString());
+                }
+                if(jsonObject.getJSONObject("greenView") != null){
+                    JSONObject greenObject = jsonObject.getJSONObject("greenView");
+                    if(greenObject.get("today") != null
+                            && StringUtils.isNotBlank(greenObject.get("today").toString())){
+                        totaltoday = totaltoday + Double.parseDouble(greenObject.get("today").toString());
+                    }
+                    if(greenObject.get("month") != null
+                            && StringUtils.isNotBlank(greenObject.get("month").toString())){
+                        totalmonth = totalmonth + Double.parseDouble(greenObject.get("month").toString());
+                    }
+                    if(greenObject.get("year") != null
+                            && StringUtils.isNotBlank(greenObject.get("year").toString())){
+                        totalyear = totalyear + Double.parseDouble(greenObject.get("year").toString());
+                    }
+                }
+            }
+        }
+        projectJSONObject.put("totalEnergyStorage",totalEnergyStorage);
+        projectJSONObject.put("totalEnergyCapacity",totalEnergyCapacity);
+        projectJSONObject.put("totalHeatArea",totalHeatArea);
+        projectJSONObject.put("totaltoday",totaltoday);
+        projectJSONObject.put("totalmonth",totalmonth);
+        projectJSONObject.put("totalyear",totalyear);
     }
 
     /**
@@ -307,11 +384,47 @@ public class ApiService {
         for(Object infoObject : infoArray){
             if(infoObject instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)infoObject;
-                if("HeatArea".equals(jsonObject.getString("name"))){
-                    if(StringUtils.isNotBlank(jsonObject.getString("value"))){
-                        project.put("heatArea",jsonObject.getString("value"));//供暖面积
+                if("EnergyStorage".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                        && !"".equals(jsonObject.getString("value"))){
+                        project.put("EnergyStorage",jsonObject.getString("value"));//储能容量
                     }else{
-                        project.put("heatArea","");
+                        project.put("EnergyStorage","");//储能容量
+                    }
+                }else if("EnergyCapacity".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                            && !"".equals(jsonObject.getString("value"))){
+                        project.put("EnergyCapacity",jsonObject.getString("value"));//储能功率
+                    }else{
+                        project.put("EnergyCapacity","");//储能功率
+                    }
+                }else if("HeatArea".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                            && !"".equals(jsonObject.getString("value"))){
+                        project.put("HeatArea",jsonObject.getString("value"));//供暖面积
+                    }else{
+                        project.put("HeatArea","");//供暖面积
+                    }
+                }else if("CCERS".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                            && !"".equals(jsonObject.getString("value"))){
+                        project.put("CCERS",jsonObject.getString("value"));//CO2减排量
+                    }else{
+                        project.put("CCERS","");//CO2减排量
+                    }
+                }else if("CoalSave".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                            && !"".equals(jsonObject.getString("value"))){
+                        project.put("CoalSave",jsonObject.getString("value"));//标煤节约量
+                    }else{
+                        project.put("CoalSave","");//标煤节约量
+                    }
+                }else if("GreenSpace".equals(jsonObject.getString("name"))){
+                    if(jsonObject.getString("value") != null
+                            && !"".equals(jsonObject.getString("value"))){
+                        project.put("GreenSpace",jsonObject.getString("value"));//绿化贡献面积
+                    }else{
+                        project.put("GreenSpace","");//绿化贡献面积
                     }
                 }
             }
