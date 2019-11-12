@@ -254,7 +254,7 @@
     //百度地图API功能
     $(function () {
         token = getCookie("token_v3");
-        // token = '36f624d8-b447-4d2b-b120-ecc69a236fe9';
+        // token = '3b4f2d82-4e84-4ed2-bc52-a886960a044d';
         //绿色消纳
         // initData(token);
         initProjectList(token);
@@ -343,9 +343,9 @@
 
     //减排贡献
     function showDataOverview(dataitem){
-        $("#ccers").html(dataitem.dataView.CCERS+"<sup>kt</sup>");
-        $("#coalSave").html(dataitem.dataView.CoalSave+"<sup>kt</sup>");
-        $("#greenSpace").html(dataitem.dataView.GreenSpace+"<sup>亿株</sup>");
+        // $("#ccers").html(dataitem.dataView.CCERS+"<sup>kt</sup>");
+        // $("#coalSave").html(dataitem.dataView.CoalSave+"<sup>kt</sup>");
+        // $("#greenSpace").html(dataitem.dataView.GreenSpace+"<sup>亿株</sup>");
     }
 
     //获取项目列表
@@ -374,6 +374,10 @@
                 $("#subThreeData").html(res.totalHeatArea+"<sup>m&sup2</sup>");
                 $("#subFourData").html(res.heatNum+"<sup>个</sup>");
                 $("#subFiveData").html(res.vDeviceItemsNum+"<sup>个</sup>");
+                //减排贡献
+                $("#ccers").html(res.totalCO2+"<sup>kt</sup>");
+                $("#coalSave").html(res.totalCoalSave+"<sup>kt</sup>");
+                $("#greenSpace").html(res.totalGreenSpace+"<sup>亿株</sup>");
                 //运维信息
                 onlineData(res.onlineCount,res.offlineCount);
                 deviceData(res.runCount, res.standbyCount);

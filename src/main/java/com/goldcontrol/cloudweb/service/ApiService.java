@@ -124,6 +124,10 @@ public class ApiService {
         double totalEnergyStorage = 0;
         double totalEnergyCapacity = 0;
         double totalHeatArea = 0;
+
+        double totalCO2 = 0;
+        double totalCoalSave = 0;
+        double totalGreenSpace = 0;
         //绿色收纳求和
         double totaltoday = 0;
         double totalmonth = 0;
@@ -144,6 +148,18 @@ public class ApiService {
                     if(jsonObject.get("HeatArea") != null
                             && StringUtils.isNotBlank(jsonObject.get("HeatArea").toString())){
                         totalHeatArea = totalHeatArea + Double.parseDouble(jsonObject.get("HeatArea").toString());
+                    }
+                    if(jsonObject.get("CCERS") != null
+                            && StringUtils.isNotBlank(jsonObject.get("CCERS").toString())){
+                        totalCO2 = totalCO2 + Double.parseDouble(jsonObject.get("CCERS").toString());
+                    }
+                    if(jsonObject.get("CoalSave") != null
+                            && StringUtils.isNotBlank(jsonObject.get("CoalSave").toString())){
+                        totalCoalSave = totalCoalSave + Double.parseDouble(jsonObject.get("CoalSave").toString());
+                    }
+                    if(jsonObject.get("GreenSpace") != null
+                            && StringUtils.isNotBlank(jsonObject.get("GreenSpace").toString())){
+                        totalGreenSpace = totalGreenSpace + Double.parseDouble(jsonObject.get("GreenSpace").toString());
                     }
                     if(jsonObject.getJSONObject("greenView") != null){
                         JSONObject greenObject = jsonObject.getJSONObject("greenView");
@@ -172,6 +188,10 @@ public class ApiService {
         projectJSONObject.put("totaltoday",totaltoday);
         projectJSONObject.put("totalmonth",totalmonth);
         projectJSONObject.put("totalyear",totalyear);
+
+        projectJSONObject.put("totalCO2",totalCO2);
+        projectJSONObject.put("totalCoalSave",totalCoalSave);
+        projectJSONObject.put("totalGreenSpace",totalGreenSpace);
     }
 
     /**
