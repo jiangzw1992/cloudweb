@@ -11,6 +11,39 @@
         body,html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
 		#l-map{height:100%;width:78%;float:left;border-right:2px solid #bcbcbc;}
 		#r-result{height:100%;width:20%;float:left;}
+        table tbody {
+            display:block;
+            height:200px; //高度根据实际自定义
+            overflow-y:scroll;
+            -webkit-overflow-scrolling: touch; // 为了滚动顺畅
+        }
+
+        .li1{
+            width: 30%;
+            color: white;
+            text-align: center
+        }
+        .li2{
+            width: 40%;
+            color: white;
+            text-align: center
+        }
+        li{
+            display: block;
+            height: auto;
+            list-style-type: none;
+            text-align: -webkit-match-parent;
+            font-size: 16px;
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+        }
+        .userTable{
+            overflow:auto
+        }
+
+        .bimg{
+            background-image: linear-gradient(#19426E, transparent, #19426E)
+        }
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=uxNOfHgG9sm0ysvPxr8IrRNh1mHXj1vr"></script>
 </head>
@@ -125,15 +158,20 @@
         <div class="col-md-3">
             <div class="subTitle titleOne">用户类别</div>
             <div class="dataDiv dataOne " style="padding-left: 5px;padding-right: 5px">
-                <table id="userTable" class="table table-striped table-bordered dataTable no-footer">
-                    <thead>
-                    <tr>
-                        <td style="color: #20EAF8 ">【项目名称】</td>
-                        <td style="color: #20EAF8">【面积 m&sup2;】</td>
-                        <td style="color: #20EAF8">机组编号</td>
-                    </tr>
-                    </thead>
-                </table>
+<!--                <table id="userTable" class="table table-striped table-bordered dataTable no-footer">-->
+<!--                    <tr>-->
+<!--                        <td style="color: #20EAF8 ">【项目名称】</td>-->
+<!--                        <td style="color: #20EAF8">【面积 m&sup2;】</td>-->
+<!--                        <td style="color: #20EAF8">机组编号</td>-->
+<!--                    </tr>-->
+<!--                </table>-->
+                <ul id="userTable" class="userTable" style="display:block;width: 100%">
+                    <li style="display: flex">
+                        <div class="li2" style="color: rgb(32, 234, 248)">【项目名称】</div>
+                        <div class="li1" style="color: rgb(32, 234, 248)">【面积 m&sup2;】</div>
+                        <div class="li1" style="color: rgb(32, 234, 248)">机组编号</div>
+                    </li>
+                </ul>
             </div>
             <div class="subTitle titleTwo">监控中心</div>
             <div class="dataDiv dataTwo ">
@@ -216,21 +254,74 @@
     //百度地图API功能
     $(function () {
         token = getCookie("token_v3");
-        // token = '132c04e6-bc29-43c6-9edc-c1ec03fb3796';
+        // token = '36f624d8-b447-4d2b-b120-ecc69a236fe9';
         //绿色消纳
-        initData(token);
+        // initData(token);
         initProjectList(token);
         // //显示数据
         // initUserTable(projectList);
         // showMonitorView(projectList[0]);
 
+        $('.userTable').on('click','li',function (e) {
+            var ln = $(this).attr('ln')
+            var la = $(this).attr('la')
+            var name = $(this).attr('name')
+            var projectId =$(this).attr('id')
+            addPoint(ln,la,name);
+            $.ajax({
+                type: 'get',
+                url: '/api/initData',
+                data: {
+                    token: token,
+                    projectId:projectId
+                },
+                dataType: 'json',
+                success: function(res){
+                    showDataOverview(res);
+                    showMonitorView(res);
+                }
+            });
+        });
+
     })
 
-    function addPoint(ln,la){
+    function addPoint(ln,la,name){
+        map.clearOverlays();
         var point = new BMap.Point(ln,la);
         var marker = new BMap.Marker(point);
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
         map.addOverlay(marker);
+        var opts = {
+            width : 200,     // 信息窗口宽度
+            height: 100,     // 信息窗口高度
+            title : '项目名称'  // 信息窗口标题
+        }
+        var infoWindow = new BMap.InfoWindow(name, opts);  // 创建信息窗口对象
+        // marker.addEventListener("click", function(){
+        //     map.openInfoWindow(infoWindow,point); //开启信息窗口
+        // });
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
+
+    function displayTable(projects){
+        var $ul = $('#userTable');
+        for (var i = 0; i < projects.length; i++) {
+            var name = projects[i].name;
+            var HeatArea = projects[i].HeatArea;
+            var serialNumber = projects[i].serialNumber;
+            var id = projects[i].id;
+            var la = projects[i].latitude;
+            var ln = projects[i].longitude;
+            var name = projects[i].name;
+            var $li = $("<li style=\"display: flex\" id=\'"+id+"\' ln=\'"+ln+"\' la=\'"+la+"\' name=\'"+name+"\'>\n" +
+                "                        <div class=\"li2\">"+name+"</div>\n" +
+                "                        <div class=\"li1\">"+HeatArea+"</div>\n" +
+                "                        <div class=\"li1\">"+serialNumber+"</div>\n" +
+                "                    </li>");
+            $ul.append($li);
+        }
+        var height = $(".dataDiv").height()-40;
+        $('#userTable').css('height',height);
     }
 
     //获取项目列表
@@ -243,7 +334,7 @@
             },
             dataType: 'json',
             success: function(res){
-                //showDataOverview(res);
+                showDataOverview(res);
                 showMonitorView(res);
                 //showGreenView(res);
             }
@@ -270,8 +361,13 @@
                 var userData = res.data;
                 $("#subFourData").html(res.data.length+"个")
                 for(var i in userData){
-                    addPoint(userData[i].longitude,userData[i].latitude);
+                    //addPoint(userData[i].longitude,userData[i].latitude,userData[i].name);
+                    if(i == 1){
+                        initData(token);
+                    }
                 }
+                //jiangzhiwei
+                displayTable(userData);
                 //显示供暖站个数和供热机组数
                 $("#subTwoData").html(res.totalEnergyStorage+"<sup>kw</sup>");
                 $("#subOneData").html(res.totalEnergyCapacity+"<sup>kw</sup>");
@@ -282,7 +378,7 @@
                 onlineData(res.onlineCount,res.offlineCount);
                 deviceData(res.runCount, res.standbyCount);
                 warnData(res.alarmProjectCount, res.nomalProjectCount);
-                initUserTable(userData);
+                //initUserTable(userData);
                 //绿色收纳
                 showGreenView(res)
             }
@@ -693,76 +789,95 @@
         }
     }
 
-    //用户类别
-    function initUserTable(userData) {
-        var height = $(".dataDiv").height()-40;
-        var table = $("#userTable").DataTable({
-            data: userData,
-            autoWidth: false,
-            order: [],
-            columnDefs: [
-                {"width": "33%", "targets": 0},
-                {"width": "33%", "targets": 1},
-                {"width": "33%", "targets": 2}
-            ],
-            paging: false,
-            lengthChange: false,
-            searching: false,
-            destroy: true,
-            info: false,
-            scrollY: height,
-            pageLength: 100,
-            language: {
-                url: '../json/chinese.json',
-            },
-            columns: [
-                {
-                    data: 'name', render: function (data, type, full, meta) {
-                        var size = 6;
-                        if ($(window).width() < 1400) {
-                            size = 5;
-                        }
-                        var value = data;
-                        if (data.length > size) {
-                            value = data.substring(0, size) + "...";
-                            value = "<span title=" + data + " >" + value + "</span>";
-                        } else {
-                            value = "<span title=" + data + " >" + data + "</span>";
-                        }
-                        return value;
-                    }
-                },
-                {data: 'HeatArea'},
-                {data: 'serialNumber'}
-            ],
-        })
+    // //用户类别
+    // function initUserTable(userData) {
+    //     var height = $(".dataDiv").height()-40;
+    //     var table = $("#userTable").DataTable({
+    //         data: userData,
+    //         autoWidth: false,
+    //         order: [],
+    //         columnDefs: [
+    //             {"width": "33%", "targets": 0},
+    //             {"width": "33%", "targets": 1},
+    //             {"width": "33%", "targets": 2}
+    //         ],
+    //         paging: false,
+    //         lengthChange: false,
+    //         searching: false,
+    //         destroy: true,
+    //         info: false,
+    //         scrollY: height,
+    //         pageLength: 100,
+    //         language: {
+    //             url: '../json/chinese.json',
+    //         },
+    //         columns: [
+    //             {
+    //                 data: 'name', render: function (data, type, full, meta) {
+    //                     var size = 6;
+    //                     if ($(window).width() < 1400) {
+    //                         size = 5;
+    //                     }
+    //                     var value = data;
+    //                     if (data.length > size) {
+    //                         value = data.substring(0, size) + "...";
+    //                         value = "<span title=" + data + " >" + value + "</span>";
+    //                     } else {
+    //                         value = "<span title=" + data + " >" + data + "</span>";
+    //                     }
+    //                     return value;
+    //                 }
+    //             },
+    //             {data: 'HeatArea'},
+    //             {data: 'serialNumber'}
+    //         ],
+    //     })
+    //
+    //     $('#userTable tbody').on('mouseover', 'tr', function () {
+    //         $.ajax({
+    //             type: 'get',
+    //             url: '/api/initData',
+    //             data: {
+    //                 token: token,
+    //                 projectId:projectId
+    //             },
+    //             dataType: 'json',
+    //             success: function(res){
+    //                 showDataOverview(res);
+    //                 showMonitorView(res);
+    //             }
+    //         });
+    //
+    //         if (!$(this).hasClass('badao_hoverd') ) {
+    //             $(this).addClass('badao_hoverd');
+    //             $(this).css('cssText',' background-image: linear-gradient(#19426E, transparent, #19426E) !important');
+    //         }
+    //     } ).on('mouseleave', 'tr', function () {
+    //         if ($(this).hasClass('badao_hoverd') ) {
+    //             $(this).removeClass('badao_hoverd');
+    //             $(this).css('cssText','background-color:transparent !important');
+    //         }
+    //     } );
+    // }
 
-        $('#userTable tbody').on('mouseover', 'tr', function () {
-            var projectId = table.row(this).data().id;
-            $.ajax({
-                type: 'get',
-                url: '/api/initData',
-                data: {
-                    token: token,
-                    projectId:projectId
-                },
-                dataType: 'json',
-                success: function(res){
-                    showDataOverview(res);
-                    showMonitorView(res);
-                }
-            });
-            if (!$(this).hasClass('badao_hoverd') ) {
-                $(this).addClass('badao_hoverd');
-                $(this).css('cssText',' background-image: linear-gradient(#19426E, transparent, #19426E) !important');
-            }
-        } ).on('mouseleave', 'tr', function () {
-            if ($(this).hasClass('badao_hoverd') ) {
-                $(this).removeClass('badao_hoverd');
-                $(this).css('cssText','background-color:transparent !important');
-            }
-        } );
-    }
+    $('.userTable').on('mouseover', 'li', function () {
+        // $.ajax({
+        //     type: 'get',
+        //     url: '/api/initData',
+        //     data: {
+        //         token: token,
+        //         projectId:projectId
+        //     },
+        //     dataType: 'json',
+        //     success: function(res){
+        //         showDataOverview(res);
+        //         showMonitorView(res);
+        //     }
+        // });
+        $(this).addClass('bimg');
+    } ).on('mouseleave', 'li', function () {
+        $(this).removeClass('bimg');
+    } );
 
     //室内温度
     function innerData(temperature, topSize, fontSize) {

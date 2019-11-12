@@ -21,6 +21,7 @@ public class ApiService {
     public String getProjectsList(String token) throws ParseException {
         String url = String.format("%s/project/getProjectsList?token=%s&active=1",api_host,token);
         String result = HttpUtil.get(url);
+        System.out.println(result);
         JSONObject projectJSONObject = JSONObject.parseObject(result);
         JSONArray projectArray = projectJSONObject.getJSONArray("data");
         HashSet<String> serialNumberSetTotal = new HashSet<>();//所有的项目网关集合
@@ -50,13 +51,13 @@ public class ApiService {
 
                 JSONObject greenView = project.getJSONObject("greenView");
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(todayConsume)){
-                    greenView.put("today",Long.parseLong(powerConsume) - Long.parseLong(todayConsume));
+                    greenView.put("today",Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(month1Consume)){
-                    greenView.put("month",Long.parseLong(powerConsume) - Long.parseLong(todayConsume));
+                    greenView.put("month",Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(year1Consume)){
-                    greenView.put("year",Long.parseLong(powerConsume) - Long.parseLong(year1Consume));
+                    greenView.put("year",Double.parseDouble(powerConsume) - Double.parseDouble(year1Consume));
                 }
                 project.put("greenView",greenView);
                 if("1".equals(status)){
@@ -130,33 +131,39 @@ public class ApiService {
         for(Object object : projectArray){
             if(object instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)object;
-                if(jsonObject.get("EnergyStorage") != null
-                        && StringUtils.isNotBlank(jsonObject.get("EnergyStorage").toString())){
-                    totalEnergyStorage = totalEnergyStorage + Double.parseDouble(jsonObject.get("EnergyStorage").toString());
-                }
-                if(jsonObject.get("EnergyCapacity") != null
-                        && StringUtils.isNotBlank(jsonObject.get("EnergyCapacity").toString())){
-                    totalEnergyCapacity = totalEnergyCapacity + Double.parseDouble(jsonObject.get("EnergyCapacity").toString());
-                }
-                if(jsonObject.get("HeatArea") != null
-                        && StringUtils.isNotBlank(jsonObject.get("HeatArea").toString())){
-                    totalHeatArea = totalHeatArea + Double.parseDouble(jsonObject.get("HeatArea").toString());
-                }
-                if(jsonObject.getJSONObject("greenView") != null){
-                    JSONObject greenObject = jsonObject.getJSONObject("greenView");
-                    if(greenObject.get("today") != null
-                            && StringUtils.isNotBlank(greenObject.get("today").toString())){
-                        totaltoday = totaltoday + Double.parseDouble(greenObject.get("today").toString());
+                System.out.println(jsonObject.toJSONString());
+                try{
+                    if(jsonObject.get("EnergyStorage") != null
+                            && StringUtils.isNotBlank(jsonObject.get("EnergyStorage").toString())){
+                        totalEnergyStorage = totalEnergyStorage + Double.parseDouble(jsonObject.get("EnergyStorage").toString());
                     }
-                    if(greenObject.get("month") != null
-                            && StringUtils.isNotBlank(greenObject.get("month").toString())){
-                        totalmonth = totalmonth + Double.parseDouble(greenObject.get("month").toString());
+                    if(jsonObject.get("EnergyCapacity") != null
+                            && StringUtils.isNotBlank(jsonObject.get("EnergyCapacity").toString())){
+                        totalEnergyCapacity = totalEnergyCapacity + Double.parseDouble(jsonObject.get("EnergyCapacity").toString());
                     }
-                    if(greenObject.get("year") != null
-                            && StringUtils.isNotBlank(greenObject.get("year").toString())){
-                        totalyear = totalyear + Double.parseDouble(greenObject.get("year").toString());
+                    if(jsonObject.get("HeatArea") != null
+                            && StringUtils.isNotBlank(jsonObject.get("HeatArea").toString())){
+                        totalHeatArea = totalHeatArea + Double.parseDouble(jsonObject.get("HeatArea").toString());
                     }
+                    if(jsonObject.getJSONObject("greenView") != null){
+                        JSONObject greenObject = jsonObject.getJSONObject("greenView");
+                        if(greenObject.get("today") != null
+                                && StringUtils.isNotBlank(greenObject.get("today").toString())){
+                            totaltoday = totaltoday + Double.parseDouble(greenObject.get("today").toString());
+                        }
+                        if(greenObject.get("month") != null
+                                && StringUtils.isNotBlank(greenObject.get("month").toString())){
+                            totalmonth = totalmonth + Double.parseDouble(greenObject.get("month").toString());
+                        }
+                        if(greenObject.get("year") != null
+                                && StringUtils.isNotBlank(greenObject.get("year").toString())){
+                            totalyear = totalyear + Double.parseDouble(greenObject.get("year").toString());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
+
             }
         }
         projectJSONObject.put("totalEnergyStorage",totalEnergyStorage);
