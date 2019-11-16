@@ -241,6 +241,7 @@
 <script src="../js/datatables/datatables.bootstrap.js"></script>
 <script src="../js/basic.js"></script>
 <script>
+    var myMap = new Map();
     var token = '';
     // 百度地图API功能
     var map = new BMap.Map("allmap",{mapType:BMAP_HYBRID_MAP});    // 创建Map实例
@@ -251,6 +252,7 @@
             BMAP_HYBRID_MAP
         ]}));
     map.enableScrollWheelZoom(true);
+    var markers = [];
     //百度地图API功能
     $(function () {
         token = getCookie("token_v3");
@@ -266,41 +268,82 @@
             var ln = $(this).attr('ln')
             var la = $(this).attr('la')
             var name = $(this).attr('name')
+            var area = $(this).attr('area')
+            var storage = $(this).attr('storage')
             var projectId =$(this).attr('id')
-            addPoint(ln,la,name);
-            $.ajax({
-                type: 'get',
-                url: '/api/initData',
-                data: {
-                    token: token,
-                    projectId:projectId
-                },
-                dataType: 'json',
-                success: function(res){
-                    showDataOverview(res);
-                    showMonitorView(res);
-                }
-            });
+            // addPoint(ln,la,name);
+            // $.ajax({
+            //     type: 'get',
+            //     url: '/api/initData',
+            //     data: {
+            //         token: token,
+            //         projectId:projectId
+            //     },
+            //     dataType: 'json',
+            //     success: function(res){
+            //         showDataOverview(res);
+            //         showMonitorView(res);
+            //     }
+            // });
+            var marker = myMap.get(parseInt(projectId));
+            var sContent =
+                "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
+                "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
+                "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">江苏省南京市</div>\n" +
+                "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
+                "        <div style=\"flex:1\">\n" +
+                "            <p style=\"font-size: 23px;\">供暖面积</p>\n" +
+                "            <span style=\"font-size:30px\">"+area+"<sup>m<sup>2</sup></sup></span>\n" +
+                "        </div>\n" +
+                "        <div style=\"flex: 1;\">\n" +
+                "            <p style=\"font-size: 23px;\">储能功率</p>\n" +
+                "            <span style=\"font-size:30px\">"+storage+"<sup>kw</sup></span>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
+                "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;padding: 12px;border-radius: 2px;\">\n" +
+                "            <span style=\"color: white;font-size:20px;\">进入项目</span>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</div>";
+            var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+            marker.openInfoWindow(infoWindow);
         });
 
     })
 
-    function addPoint(ln,la,name){
-        map.clearOverlays();
-        var point = new BMap.Point(ln,la);
+    function addPoint(pId,ln,la,name,area,storage){
+        var sContent =
+            "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
+            "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
+            "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">江苏省南京市</div>\n" +
+            "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
+            "        <div style=\"flex:1\">\n" +
+            "            <p style=\"font-size: 23px;\">供暖面积</p>\n" +
+            "            <span style=\"font-size:30px\">"+area+"<sup>m<sup>2</sup></sup></span>\n" +
+            "        </div>\n" +
+            "        <div style=\"flex: 1;\">\n" +
+            "            <p style=\"font-size: 23px;\">储能功率</p>\n" +
+            "            <span style=\"font-size:30px\">"+storage+"<sup>kw</sup></span>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
+            "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;padding: 12px;border-radius: 2px;\">\n" +
+            "            <span style=\"color: white;font-size:20px;\">进入项目</span>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "</div>";
+        var point = new BMap.Point(ln, la);
         var marker = new BMap.Marker(point);
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+        map.centerAndZoom(point, 15);
         map.addOverlay(marker);
-        var opts = {
-            width : 200,     // 信息窗口宽度
-            height: 100,     // 信息窗口高度
-            title : '项目名称'  // 信息窗口标题
-        }
-        var infoWindow = new BMap.InfoWindow(name, opts);  // 创建信息窗口对象
-        // marker.addEventListener("click", function(){
-        //     map.openInfoWindow(infoWindow,point); //开启信息窗口
-        // });
-        map.openInfoWindow(infoWindow,point); //开启信息窗口
+        marker.addEventListener("click", function(){
+            this.openInfoWindow(infoWindow);
+        });
+        myMap.set(pId,marker);
+        markers.push(marker);
     }
 
     function displayTable(projects){
@@ -313,7 +356,9 @@
             var la = projects[i].latitude;
             var ln = projects[i].longitude;
             var name = projects[i].name;
-            var $li = $("<li style=\"display: flex\" id=\'"+id+"\' ln=\'"+ln+"\' la=\'"+la+"\' name=\'"+name+"\'>\n" +
+            var area = projects[i].HeatArea;
+            var storage = projects[i].EnergyStorage;
+            var $li = $("<li style=\"display: flex\" id=\'"+id+"\' ln=\'"+ln+"\' la=\'"+la+"\' name=\'"+name+"\' area=\'"+area+"\' storage=\'"+storage+"\'>\n" +
                 "                        <div class=\"li2\">"+name+"</div>\n" +
                 "                        <div class=\"li1\">"+HeatArea+"</div>\n" +
                 "                        <div class=\"li1\">"+serialNumber+"</div>\n" +
@@ -361,7 +406,7 @@
                 var userData = res.data;
                 $("#subFourData").html(res.data.length+"个")
                 for(var i in userData){
-                    //addPoint(userData[i].longitude,userData[i].latitude,userData[i].name);
+                    addPoint(userData[i].id,userData[i].longitude,userData[i].latitude,userData[i].name,userData[i].HeatArea,userData[i].EnergyStorage);
                     if(i == 1){
                         initData(token);
                     }
@@ -384,7 +429,8 @@
                 warnData(res.alarmProjectCount, res.nomalProjectCount);
                 //initUserTable(userData);
                 //绿色收纳
-                showGreenView(res)
+                showGreenView(res);
+                console.log(markers);
             }
         })
     }
