@@ -271,6 +271,7 @@
             var area = $(this).attr('area')
             var storage = $(this).attr('storage')
             var projectId =$(this).attr('id')
+            var address =$(this).attr('address')
             // addPoint(ln,la,name);
             // $.ajax({
             //     type: 'get',
@@ -289,7 +290,7 @@
             var sContent =
                 "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
                 "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
-                "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">江苏省南京市</div>\n" +
+                "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">"+address+"</div>\n" +
                 "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
                 "        <div style=\"flex:1\">\n" +
                 "            <p style=\"font-size: 23px;\">供暖面积</p>\n" +
@@ -312,11 +313,11 @@
 
     })
 
-    function addPoint(pId,ln,la,name,area,storage){
+    function addPoint(pId,ln,la,address,name,area,storage){
         var sContent =
             "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
             "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
-            "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">江苏省南京市</div>\n" +
+            "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">"+address+"</div>\n" +
             "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
             "        <div style=\"flex:1\">\n" +
             "            <p style=\"font-size: 23px;\">供暖面积</p>\n" +
@@ -406,7 +407,7 @@
                 var userData = res.data;
                 $("#subFourData").html(res.data.length+"个")
                 for(var i in userData){
-                    addPoint(userData[i].id,userData[i].longitude,userData[i].latitude,userData[i].name,userData[i].HeatArea,userData[i].EnergyStorage);
+                    addPoint(userData[i].id,userData[i].longitude,userData[i].latitude,userData[i].address,userData[i].name,userData[i].HeatArea,userData[i].EnergyStorage);
                     if(i == 1){
                         initData(token);
                     }
