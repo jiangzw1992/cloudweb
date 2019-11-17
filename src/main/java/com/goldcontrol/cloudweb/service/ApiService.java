@@ -24,7 +24,7 @@ public class ApiService {
         System.out.println(result);
         JSONObject projectJSONObject = JSONObject.parseObject(result);
         JSONArray projectArray = projectJSONObject.getJSONArray("data");
-        HashSet<String> serialNumberSetTotal = new HashSet<>();//所有的项目网关集合
+        HashSet<String> serialNumberSetTotal = new HashSet<String>();//所有的项目网关集合
         int onCount = 0;//设备开机状态
         for(Object object : projectArray){
             if(object instanceof JSONObject){
@@ -261,7 +261,7 @@ public class ApiService {
      * 网关状态信息
      */
     public int getAgentListInfo(String token, HashSet<String> serialNumberSetTotal){
-        List<Long> agentIds = new ArrayList<>();
+        List<Long> agentIds = new ArrayList<Long>();
         for(String serialNumber : serialNumberSetTotal){
             agentIds.add(Long.parseLong(serialNumber));
         }
@@ -467,7 +467,7 @@ public class ApiService {
         String result = getVdevicesItems(token,projectId);
         JSONObject resultJSONObject = JSONObject.parseObject(result);
         JSONArray dataArray = resultJSONObject.getJSONArray("data");
-        HashSet<String> serialNumberSet = new HashSet<>();
+        HashSet<String> serialNumberSet = new HashSet<String>();
         for(Object dataObject : dataArray){
             if(dataObject instanceof JSONObject){
                 JSONObject jsonObject = (JSONObject)dataObject;
