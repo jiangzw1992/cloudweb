@@ -14,8 +14,8 @@
         table tbody {
             display:block;
             height:200px; //高度根据实际自定义
-            overflow-y:scroll;
-            -webkit-overflow-scrolling: touch; // 为了滚动顺畅
+            /*overflow-y:scroll;*/
+            /*-webkit-overflow-scrolling: touch; // 为了滚动顺畅*/
         }
 
         .li1{
@@ -37,12 +37,19 @@
             padding-top: 6px !important;
             padding-bottom: 6px !important;
         }
-        .userTable{
-            overflow:auto
-        }
+        /*.userTable{*/
+        /*    overflow:auto*/
+        /*}*/
 
         .bimg{
             background-image: linear-gradient(#19426E, transparent, #19426E)
+        }
+
+        .divRoll {
+            overflow: hidden;
+        }
+        .ulRoll {
+            list-style: none;
         }
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=uxNOfHgG9sm0ysvPxr8IrRNh1mHXj1vr"></script>
@@ -157,20 +164,15 @@
         </div>
         <div class="col-md-3">
             <div class="subTitle titleOne">用户类别</div>
-            <div class="dataDiv dataOne " style="padding-left: 5px;padding-right: 5px">
-<!--                <table id="userTable" class="table table-striped table-bordered dataTable no-footer">-->
-<!--                    <tr>-->
-<!--                        <td style="color: #20EAF8 ">【项目名称】</td>-->
-<!--                        <td style="color: #20EAF8">【面积 m&sup2;】</td>-->
-<!--                        <td style="color: #20EAF8">机组编号</td>-->
-<!--                    </tr>-->
-<!--                </table>-->
-                <ul id="userTable" class="userTable" style="display:block;width: 100%">
+            <div class="dataDiv dataOne divRoll" style="padding-left: 5px;padding-right: 5px">
+                <ul id="tableTitle" class="userTable" style="display:block;width: 100%">
                     <li style="display: flex">
                         <div class="li2" style="color: rgb(32, 234, 248)">【项目名称】</div>
                         <div class="li1" style="color: rgb(32, 234, 248)">【面积 m&sup2;】</div>
                         <div class="li1" style="color: rgb(32, 234, 248)">机组编号</div>
                     </li>
+                </ul>
+                <ul id="userTable" class="userTable ulRoll" style="display:block;width: 100%">
                 </ul>
             </div>
             <div class="subTitle titleTwo">监控中心</div>
@@ -255,8 +257,8 @@
     var markers = [];
     //百度地图API功能
     $(function () {
-        token = getCookie("token_v3");
-        // token = '3b4f2d82-4e84-4ed2-bc52-a886960a044d';
+        //token = getCookie("token_v3");
+        token = '7fc741a8-ab19-4d45-9e6e-454241c0fde3';
         //绿色消纳
         // initData(token);
         initProjectList(token);
@@ -288,7 +290,7 @@
             // });
             var marker = myMap.get(parseInt(projectId));
             var sContent =
-                "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
+                "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.2);padding-top: 5px;margin: 0;\">\n" +
                 "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
                 "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">"+address+"</div>\n" +
                 "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
@@ -315,7 +317,7 @@
 
     function addPoint(pId,ln,la,address,name,area,storage){
         var sContent =
-            "<div style=\"width: 400px;height: 300px;background: #15354C;padding-top: 5px;margin: 0;\">\n" +
+            "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.2);padding-top: 5px;margin: 0;\">\n" +
             "    <div style=\"color: white;margin-left: 8%;font-size: 28px;\">"+name+"</div>\n" +
             "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 23px;margin-top: 15px;\">"+address+"</div>\n" +
             "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
@@ -926,8 +928,11 @@
         //     }
         // });
         $(this).addClass('bimg');
+
+        clearInterval(time);
     } ).on('mouseleave', 'li', function () {
         $(this).removeClass('bimg');
+        time = setInterval(rollStart, 2000)
     } );
 
     //室内温度
@@ -1151,7 +1156,25 @@
             }
         }
         return "";
-    };
+    }
+
+    var time = setInterval(function () {
+        rollStart();
+    }, 2000)
+
+    function rollStart() {
+        var he = $(".divRoll>.ulRoll>li").height();//找到li高
+        var li = $(".divRoll>.ulRoll>li:eq(0)").clone();
+        $(".divRoll>.ulRoll").animate({
+            "marginTop": "-" + he
+        }, 200, function () {
+            $(".divRoll>.ulRoll").css({
+                "marginTop": 0
+            })
+            $(".divRoll>.ulRoll>li:eq(0)").remove();
+            $(".ulRoll").append(li)
+        });
+    }
 
 </script>
 </body>
