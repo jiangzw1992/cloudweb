@@ -429,8 +429,9 @@
     function jump(link) {
         event.stopPropagation();
         var hostName = window.location.hostname
-        var linkUrl = hostName + ":" + 8880 + link
-        window.parent.location.href = "/#ProjectModule";
+        var defaultUrl = "http://"+hostName + ":" + 8880 + "/#ProjectModule"
+        var linkUrl = "http://"+hostName + ":" + 8880 + link
+        window.parent.location.href = defaultUrl;
         window.parent.location.href = linkUrl;
     }
 
