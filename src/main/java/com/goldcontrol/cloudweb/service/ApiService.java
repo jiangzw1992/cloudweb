@@ -62,6 +62,9 @@ public class ApiService {
                 project.put("greenView",greenView);
                 if("1".equals(status)){
                     onCount++;
+                    project.put("powerStatus",1);//开关机状态
+                }else{
+                    project.put("powerStatus",0);
                 }
             }
         }
@@ -90,13 +93,36 @@ public class ApiService {
         //供暖站个数
         projectJSONObject.put("heatNum",projectArray.size());
         //获取告警的项目数量
-        int alarmProjectCount = getProjectAlarmCount(token);
+        HashSet<String> alarmProjectSet = getProjectAlarm(token);
+
+        int alarmProjectCount = alarmProjectSet.size();
         int projectCount = projectArray.size();
         projectJSONObject.put("alarmProjectCount",alarmProjectCount);//报警数量
         projectJSONObject.put("nomalProjectCount",projectCount-alarmProjectCount);//正常数
         projectJSONObject.put("runCount",onCount);//运行总数
         projectJSONObject.put("standbyCount",projectCount-onCount);//待机总数
-        int onlineCount = getAgentListInfo(token,serialNumberSetTotal);
+        HashSet<String> onlineAgentSet = getAgentListInfo(token,serialNumberSetTotal);
+
+        //处理告警 离线项目
+        for(Object object : projectArray){
+            if(object instanceof JSONObject) {
+                JSONObject project = (JSONObject) object;
+                String pId = project.getString("id");
+                String agentId = project.getString("serialNumber");
+                if(alarmProjectSet.contains(pId)){
+                    project.put("alarmStatus",1);
+                }else{
+                    project.put("alarmStatus",0);
+                }
+                if(onlineAgentSet.contains(agentId)){
+                    project.put("onlineStatus",1);
+                }else{
+                    project.put("onlineStatus",0);
+                }
+            }
+        }
+
+        int onlineCount = onlineAgentSet.size();
         projectJSONObject.put("onlineCount",onlineCount);
         projectJSONObject.put("offlineCount",projectCount-onlineCount);
         sumProjectInfo(projectJSONObject);
@@ -260,7 +286,7 @@ public class ApiService {
     /**
      * 网关状态信息
      */
-    public int getAgentListInfo(String token, HashSet<String> serialNumberSetTotal){
+    public HashSet<String> getAgentListInfo(String token, HashSet<String> serialNumberSetTotal){
         List<Long> agentIds = new ArrayList<Long>();
         for(String serialNumber : serialNumberSetTotal){
             agentIds.add(Long.parseLong(serialNumber));
@@ -271,6 +297,7 @@ public class ApiService {
         request.put("hash","test");
         request.put("agentIds",agentIds);
         String result =  HttpUtil.post(url,request.toJSONString());
+        HashSet<String> onlineAgentSet = new HashSet<String>();
         int onlineCount = 0;
         if(StringUtils.isNotBlank(result)){
             JSONObject resultJSONObject = JSONObject.parseObject(result);
@@ -280,11 +307,12 @@ public class ApiService {
                     JSONObject agentInfoObject = (JSONObject)object;
                     if(1 == agentInfoObject.getInteger("condition")){
                         onlineCount++;
+                        onlineAgentSet.add(agentInfoObject.getString("agentid"));
                     }
                 }
             }
         }
-        return onlineCount;
+        return onlineAgentSet;
     }
 
     /**
@@ -487,7 +515,7 @@ public class ApiService {
     /**
      * 获取所有项目的告警数量
      */
-    public int getProjectAlarmCount(String token){
+    public HashSet<String> getProjectAlarm(String token){
         Date date = new Date();
         Long endTime = date.getTime();
         Calendar calendar = Calendar.getInstance();
@@ -499,9 +527,16 @@ public class ApiService {
         if(StringUtils.isNotBlank(result)){
             JSONObject jsonObject = JSON.parseObject(result);
             JSONArray dataArray = jsonObject.getJSONArray("data");
-            return dataArray.size();
+            HashSet<String> alarmSet = new HashSet<>();
+            for(Object object : dataArray){
+                if(object instanceof JSONObject){
+                    JSONObject jsonObject1 = (JSONObject)object;
+                    alarmSet.add(jsonObject1.getString("projectId"));
+                }
+            }
+            return alarmSet;
         }
-        return 0;
+        return new HashSet<String>();
     }
 
     public String getTodayGreenData(String token,JSONObject deviceObject) throws ParseException {
