@@ -8,6 +8,8 @@ import org.codehaus.plexus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -26,6 +28,7 @@ public class ApiService {
         JSONArray projectArray = projectJSONObject.getJSONArray("data");
         HashSet<String> serialNumberSetTotal = new HashSet<String>();//所有的项目网关集合
         int onCount = 0;//设备开机状态
+        double powerTotal = 0;
         for(Object object : projectArray){
             if(object instanceof JSONObject){
                 JSONObject project = (JSONObject)object;
@@ -40,6 +43,7 @@ public class ApiService {
                 String status = getProjectItemData(currentItemData,"设备状态");
                 //当前时间耗电量
                 String powerConsume = getProjectItemData(currentItemData,"耗电量");
+                powerTotal = powerTotal + Double.parseDouble(powerConsume);
                 //获取耗电量的设备id和itemid
                 JSONObject deviceObject = getProjectDeviceInfo(currentItemData,"耗电量");
                 //今天凌晨的耗电量
@@ -68,26 +72,6 @@ public class ApiService {
                 }
             }
         }
-
-//        for(int k=0;k<projectArray.size();k++){
-//            JSONObject jsonObject = projectArray.getJSONObject(k);
-//            if( k == 0){
-//                jsonObject.put("longitude","122.259722");
-//                jsonObject.put("latitude","43.687401");
-//            }else if(k == 1){
-//                jsonObject.put("longitude","122.20453");
-//                jsonObject.put("latitude","43.63982");
-//            }else if(k == 2){
-//                jsonObject.put("longitude","122.175784");
-//                jsonObject.put("latitude","43.724938");
-//            }else if(k == 3){
-//                jsonObject.put("longitude","122.272729");
-//                jsonObject.put("latitude","43.691469");
-//            }else if(k == 4){
-//                jsonObject.put("longitude","122.22228");
-//                jsonObject.put("latitude","43.676709");
-//            }
-//        }
 
         projectJSONObject.put("vDeviceItemsNum",serialNumberSetTotal.size());
         //供暖站个数
@@ -122,12 +106,26 @@ public class ApiService {
             }
         }
 
+
+
         int onlineCount = onlineAgentSet.size();
         projectJSONObject.put("onlineCount",onlineCount);
         projectJSONObject.put("offlineCount",projectCount-onlineCount);
+
+        //计算减排贡献等数据
+        double CCERS = divide(powerTotal*0.997,1000000);
+        double CoalSave = divide(powerTotal*0.4,100000);
+        projectJSONObject.put("totalCO2",CCERS);
+        projectJSONObject.put("totalCoalSave",CoalSave);
+
         sumProjectInfo(projectJSONObject);
-        System.out.println(projectJSONObject.toJSONString());
         return projectJSONObject.toJSONString();
+    }
+
+    private double divide(double numA,double numB){
+        BigDecimal a = BigDecimal.valueOf(numA);
+        BigDecimal b = BigDecimal.valueOf(numB);;
+        return a.divide(b, 2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public String getProjectInfo(String token,String projectId){
@@ -215,8 +213,9 @@ public class ApiService {
         projectJSONObject.put("totalmonth",totalmonth);
         projectJSONObject.put("totalyear",totalyear);
 
-        projectJSONObject.put("totalCO2",totalCO2);
-        projectJSONObject.put("totalCoalSave",totalCoalSave);
+        //不在使用  重新计算
+//        projectJSONObject.put("totalCO2",totalCO2);
+//        projectJSONObject.put("totalCoalSave",totalCoalSave);
         projectJSONObject.put("totalGreenSpace",totalGreenSpace);
     }
 
@@ -360,7 +359,7 @@ public class ApiService {
         }
 
         String projectId = project.getString("id");
-        //getProjectCurrentItemData(token,projectId);
+        getProjectCurrentItemData(token,projectId);
 
         //获取数据概览信息
         String infoString = getProjectInfo(token,projectId);
@@ -422,6 +421,10 @@ public class ApiService {
                 }else if("回水温度".equals(jsonObject.getString("alias"))){
                     if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
                         monitorView.put("H_TEM",jsonObject.getString("val"));
+                    }
+                }else if("耗电量".equals(jsonObject.getString("alias"))){
+                    if(org.apache.commons.lang3.StringUtils.isNotBlank(jsonObject.getString("val"))){
+                        monitorView.put("power",jsonObject.getString("val"));
                     }
                 }
             }

@@ -289,23 +289,26 @@
             var storage = $(this).attr('storage')
             var projectId =$(this).attr('id')
             var address = $(this).attr('address')
+            var onlineStatus = $(this).attr('onlineStatus')
+            var alarmStatus = $(this).attr('alarmStatus')
             if(address === undefined){
                 address = ''
             }
-            // addPoint(ln,la,name);
-            // $.ajax({
-            //     type: 'get',
-            //     url: '/api/initData',
-            //     data: {
-            //         token: token,
-            //         projectId:projectId
-            //     },
-            //     dataType: 'json',
-            //     success: function(res){
-            //         showDataOverview(res);
-            //         showMonitorView(res);
-            //     }
-            // });
+            addPoint(projectId,ln,la,address,name,area,storage,onlineStatus,alarmStatus);
+
+            $.ajax({
+                type: 'get',
+                url: '/api/initData',
+                data: {
+                    token: token,
+                    projectId:projectId
+                },
+                dataType: 'json',
+                success: function(res){
+                    showDataOverview(res);
+                    showMonitorView(res);
+                }
+            });
 
             var marker = myMap.get(parseInt(projectId));
             var sContent =
@@ -323,7 +326,7 @@
                 "        </div>\n" +
                 "    </div>\n" +
                 "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
-                "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;padding: 12px;border-radius: 2px;\">\n" +
+                "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 2px;\">\n" +
                 "            <span style=\"color: white;font-size:20px;\">进入项目</span>\n" +
                 "        </div>\n" +
                 "    </div>\n" +
@@ -355,6 +358,7 @@
     })
 
     function addPoint(pId,ln,la,address,name,area,storage,onlineStatus,alarmStatus){
+        var link = "/#ProjectModule/detail/"+pId;
         var sContent =
             "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
             "    <div style=\"color: white;margin-left: 8%;font-size: 25px;\">"+name+"</div>\n" +
@@ -370,8 +374,8 @@
             "        </div>\n" +
             "    </div>\n" +
             "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
-            "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;padding: 12px;border-radius: 2px;\">\n" +
-            "            <span style=\"color: white;font-size:20px;\">进入项目</span>\n" +
+            "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 2px;\">\n" +
+            "            <span style=\"color: white;font-size:20px;\"><a style='color: white' href="+link+">进入项目</a></span>\n" +
             "        </div>\n" +
             "    </div>\n" +
             "</div>";
@@ -434,7 +438,10 @@
             var name = projects[i].name;
             var area = projects[i].HeatArea;
             var storage = projects[i].EnergyStorage;
-            var $li = $("<li style=\"display: flex\" id=\'"+id+"\' ln=\'"+ln+"\' la=\'"+la+"\' name=\'"+name+"\' area=\'"+area+"\' storage=\'"+storage+"\'>\n" +
+            var onlineStatus = projects[i].onlineStatus;
+            var alarmStatus = projects[i].alarmStatus;
+
+            var $li = $("<li style=\"display: flex\" id=\'"+id+"\' ln=\'"+ln+"\' la=\'"+la+"\' name=\'"+name+"\' area=\'"+area+"\' storage=\'"+storage+"\' onlineStatus=\'"+onlineStatus+"\' alarmStatus=\'"+alarmStatus+"\'>\n" +
                 "                        <div class=\"li2\">"+name+"</div>\n" +
                 "                        <div class=\"li1\">"+HeatArea+"</div>\n" +
                 "                        <div class=\"li1\">"+serialNumber+"</div>\n" +
@@ -553,6 +560,7 @@
     }
 
     function showMonitorView(dataitem){
+        debugger;
         //监控中心 响应式适配1920*1080 100%模式
         var topSize = '30%';
         var fontSize = 14;
