@@ -428,8 +428,10 @@
 
     function jump(link) {
         event.stopPropagation();
+        var hostName = window.location.hostname
+        var linkUrl = hostName + ":" + 8880 + link
         window.parent.location.href = "/#ProjectModule";
-        window.parent.location.href = link;
+        window.parent.location.href = linkUrl;
     }
 
     function displayTable(projects){
