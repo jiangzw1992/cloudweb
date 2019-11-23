@@ -272,8 +272,8 @@
     var q = []
         //百度地图API功能
     $(function () {
-        // token = getCookie("token_v3");
-        token = 'ad989782-6aa3-4c4a-92c0-fd18508d305f';
+        token = getCookie("token_v3");
+        // token = 'ad989782-6aa3-4c4a-92c0-fd18508d305f';
         //绿色消纳
         // initData(token);
         initProjectList(token);
@@ -358,7 +358,7 @@
     })
 
     function addPoint(pId,ln,la,address,name,area,storage,onlineStatus,alarmStatus){
-        var link = "/#ProjectModule/detail/"+pId;
+        var myLink = '"'+"/#ProjectModule/detail/"+pId+'"';
         var sContent =
             "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
             "    <div style=\"color: white;margin-left: 8%;font-size: 25px;\">"+name+"</div>\n" +
@@ -375,7 +375,7 @@
             "    </div>\n" +
             "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
             "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 2px;\">\n" +
-            "            <span style=\"color: white;font-size:20px;\"><a style='color: white' href="+link+">进入项目</a></span>\n" +
+            "            <span onclick=jump("+myLink+") style=\"color: white;font-size:20px;\">进入项目</span>\n" +
             "        </div>\n" +
             "    </div>\n" +
             "</div>";
@@ -424,6 +424,12 @@
         });
         myMap.set(pId,marker);
         markers.push(marker);
+    }
+
+    function jump(link) {
+        event.stopPropagation();
+        window.parent.location.href = "/#ProjectModule";
+        window.parent.location.href = link;
     }
 
     function displayTable(projects){
@@ -560,7 +566,6 @@
     }
 
     function showMonitorView(dataitem){
-        debugger;
         //监控中心 响应式适配1920*1080 100%模式
         var topSize = '30%';
         var fontSize = 14;
