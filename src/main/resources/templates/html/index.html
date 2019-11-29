@@ -273,7 +273,7 @@
         //百度地图API功能
     $(function () {
         token = getCookie("token_v3");
-        // token = 'ad989782-6aa3-4c4a-92c0-fd18508d305f';
+        // token = '38656db7-8c90-4c0f-9abb-a3c7dd9c2994';
         //绿色消纳
         // initData(token);
         initProjectList(token);
@@ -312,7 +312,7 @@
 
             var marker = myMap.get(parseInt(projectId));
             var sContent =
-                "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
+                "<div style=\"width: 330px;height: 250px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
                 "    <div style=\"color: white;margin-left: 8%;font-size: 25px;\">"+name+"</div>\n" +
                 "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 20px;margin-top: 15px;\">"+address+"</div>\n" +
                 "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
@@ -326,7 +326,7 @@
                 "        </div>\n" +
                 "    </div>\n" +
                 "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
-                "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 2px;\">\n" +
+                "        <div style=\"float:right;margin-right:10px;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 7px;\">\n" +
                 "            <span style=\"color: white;font-size:20px;\">进入项目</span>\n" +
                 "        </div>\n" +
                 "    </div>\n" +
@@ -343,8 +343,8 @@
                 boxStyle:{
                     opacity: "0.95",
                     background: "#333333",
-                    width: "400px",
-                    height: "300px"
+                    width: "330px",
+                    height: "250px"
                 },
                 closeIconUrl:"http://api0.map.bdimg.com/images/iw_close1d3.gif",
                 closeIconMargin: "8px 8px 0 0",
@@ -360,7 +360,7 @@
     function addPoint(pId,ln,la,address,name,area,storage,onlineStatus,alarmStatus){
         var myLink = '"'+"/#ProjectModule/detail/"+pId+'"';
         var sContent =
-            "<div style=\"width: 400px;height: 300px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
+            "<div style=\"width: 330px;height: 250px;background-color: rgba(21,53,76,0.8);padding-top: 25px;margin: 0;\">\n" +
             "    <div style=\"color: white;margin-left: 8%;font-size: 25px;\">"+name+"</div>\n" +
             "    <div style=\"color: #82C8D0;margin-left: 8%;font-size: 20px;margin-top: 15px;\">"+address+"</div>\n" +
             "    <div style=\"display: flex;margin-left: 8%;color: white;margin-top: 20px;\">\n" +
@@ -373,8 +373,8 @@
             "            <span style=\"font-size:30px\">"+storage+"<sup>kw</sup></span>\n" +
             "        </div>\n" +
             "    </div>\n" +
-            "    <div style=\"text-align: center;margin-top: 15px;\">\n" +
-            "        <div style=\"text-align: center;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 2px;\">\n" +
+            "    <div style=\"float:right;margin-right:10px;margin-top: 15px;\">\n" +
+            "        <div style=\"float:right;margin-right:10px;background: #1E85DA;display:inline-block;cursor:pointer;padding: 12px;border-radius: 7px;\">\n" +
             "            <span onclick=jump("+myLink+") style=\"color: white;font-size:20px;\">进入项目</span>\n" +
             "        </div>\n" +
             "    </div>\n" +
@@ -400,8 +400,8 @@
             boxStyle:{
                 opacity: "0.95",
                 background: "#333333",
-                width: "400px",
-                height: "300px"
+                width: "330px",
+                height: "250px"
             },
             closeIconUrl:"http://api0.map.bdimg.com/images/iw_close1d3.gif",
             closeIconMargin: "8px 8px 0 0",
@@ -429,8 +429,8 @@
     function jump(link) {
         event.stopPropagation();
         var hostName = window.location.hostname
-        var defaultUrl = "http://"+hostName + ":" + 8880 + "/#ProjectModule"
-        var linkUrl = "http://"+hostName + ":" + 8880 + link
+        var defaultUrl = "http://"+hostName + ":" + 8080 + "/#ProjectModule"
+        var linkUrl = "http://"+hostName + ":" + 8080 + link
         window.parent.location.href = defaultUrl;
         window.parent.location.href = linkUrl;
     }
@@ -514,11 +514,11 @@
                 // $("#subFourData").html(res.heatNum+"<sup>个</sup>");
                 // $("#subFiveData").html(res.vDeviceItemsNum+"<sup>个</sup>");
 
-                $("#subTwoData").html("134000kwh");
-                $("#subOneData").html("16750kw");
-                $("#subThreeData").html("165540m&sup2");
+                $("#subTwoData").html("148.05MWh");
+                $("#subOneData").html("16.45MW");
+                $("#subThreeData").html("16.554万m&sup2");
                 $("#subFourData").html("29个");
-                $("#subFiveData").html("31个");
+                $("#subFiveData").html("31台");
                 //减排贡献
                 $("#ccers").html(res.totalCO2+"<sup>kt</sup>");
                 $("#coalSave").html(res.totalCoalSave+"<sup>kt</sup>");
@@ -1239,7 +1239,7 @@
         }
 
         $("#enter").click(function(){
-            window.parent.location.replace('http://112.126.98.10:8880/#ProjectModule');
+            window.parent.location.replace('http://123.57.29.122:8080/#ProjectModule');
         })
     }
 
