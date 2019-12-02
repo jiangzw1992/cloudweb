@@ -1272,7 +1272,23 @@
             $(".divRoll>#box>.ulRoll").css({
                 "marginTop": 0
             })
+            refreshTemp(secondLi)
+        });
+    }
 
+    function refreshTemp(li) {
+        var projectId =li.attr('id')
+        $.ajax({
+            type: 'get',
+            url: '/api/initData',
+            data: {
+                token: token,
+                projectId:projectId
+            },
+            dataType: 'json',
+            success: function(res){
+                showMonitorView(res);
+            }
         });
     }
 
