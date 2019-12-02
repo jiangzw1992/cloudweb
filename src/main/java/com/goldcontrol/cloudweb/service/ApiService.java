@@ -59,7 +59,7 @@ public class ApiService {
                     greenView.put("today",divide(data,1000));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(month1Consume)){
-                    double data = Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume);
+                    double data = Double.parseDouble(powerConsume) - Double.parseDouble(month1Consume);
                     greenView.put("month",divide(data,1000));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(year1Consume)){
