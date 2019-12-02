@@ -55,13 +55,16 @@ public class ApiService {
 
                 JSONObject greenView = project.getJSONObject("greenView");
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(todayConsume)){
-                    greenView.put("today",Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume));
+                    double data = Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume);
+                    greenView.put("today",divide(data,1000));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(month1Consume)){
-                    greenView.put("month",Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume));
+                    double data = Double.parseDouble(powerConsume) - Double.parseDouble(todayConsume);
+                    greenView.put("month",divide(data,1000));
                 }
                 if(StringUtils.isNotBlank(powerConsume) && StringUtils.isNotBlank(year1Consume)){
-                    greenView.put("year",Double.parseDouble(powerConsume) - Double.parseDouble(year1Consume));
+                    double data = Double.parseDouble(powerConsume) - Double.parseDouble(year1Consume);
+                    greenView.put("year",divide(data,1000));
                 }
                 project.put("greenView",greenView);
                 if("1".equals(status)){
